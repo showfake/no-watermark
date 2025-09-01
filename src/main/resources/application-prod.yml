@@ -1,0 +1,20 @@
+forest:
+  proxy:
+    # 启用后仅在请求国外站点时才启用代理(本机是国外网络环境则不需要启用)
+    enable: true
+    # http or socks (docs:https://forest.kim/pages/1.7.x/api_proxy/)
+    type: http
+    host: 127.0.0.1
+    port: 7890
+    # username:
+    # password:
+
+
+# 平台账号设置
+account:
+  # 推特账号设置
+  twitter:
+    auth_token: require
+    x_csrf_token: require
+    authorization: require
+
