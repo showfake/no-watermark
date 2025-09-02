@@ -15,7 +15,7 @@
 
 若解析失效或请求添加新站点请在 [Issues](https://github.com/LauZzL/no-watermark/issues) 中反馈。
 
-AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3u8player.org/)播放。
+AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3u8player.org/)或在我们小程序中使用M3U8工具播放。
 
 | 平台      | 支持域名                                               | 视频 | 图集 | 实况 |
 |---------|----------------------------------------------------|----|---|----|
@@ -27,9 +27,9 @@ AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3
 | 皮皮搞笑    | `h5.ippzone.com`                                   | ✅  | ✅ | -  |
 | 微视      | `v.weishi.qq.com` `video.weishi.qq.com`            | ✅  | ✅ | -  |
 | 小红书     | `xhslink.com` `www.xiaohongshu.com`                | ✅  | ✅ | ✅ |
-| 快手      | `www.kuaishou.com`                                 | ✅  | ✅ | ❌️ |
-| 微博      | `weibo.com` `m.weibo.cn`                           | ✅  | ✅ | ❌️ |
-| AcFun   | `www.acfun.cn`                                         | ✅  | ❌️ | ❌️ |
+| 快手      | `www.kuaishou.com`                                 | ✅  | ✅ | - |
+| 微博      | `weibo.com` `m.weibo.cn`                           | ✅  | ✅ | - |
+| AcFun   | `www.acfun.cn`                                         | ✅  | - | - |
 | 待添加     | -                                                  | -  |
 
 

@@ -121,3 +121,7 @@ forest:
     # username:
     # password:
 ```
+
+## Redis
+
+部分平台可能需要使用redis来存储一些数据，需要 `application-${spring.profiles.active}.yml` 文件中配置redis连接信息。
