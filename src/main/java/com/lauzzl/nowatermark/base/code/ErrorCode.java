@@ -34,6 +34,7 @@ public enum ErrorCode {
     PARSER_GET_POST_FAILED(10007,"获取视频信息失败"),
     PARSER_PARSE_MEDIA_INFO_FAILED(10008,"解析媒体信息失败"),
     PARSER_NOT_GET_REAL_URL(10009,"获取真实地址失败"),
+    PARSER_COOKIE_EXPIRED(10010,"Cookie过期"),
     ;
 
 
