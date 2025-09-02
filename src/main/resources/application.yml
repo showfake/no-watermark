@@ -27,3 +27,7 @@ knife4j:
     language: zh_cn
 
 
+# 缓存设置
+redis:
+  cache:
+    cookie-key: no_watermark:cookie:%s
