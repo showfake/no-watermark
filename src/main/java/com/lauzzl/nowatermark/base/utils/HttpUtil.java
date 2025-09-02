@@ -4,8 +4,6 @@ import com.dtflys.forest.Forest;
 import com.dtflys.forest.http.ForestResponse;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 
-import java.util.Optional;
-
 public class HttpUtil {
 
 
@@ -22,6 +20,5 @@ public class HttpUtil {
                 .execute(ForestResponse.class);
         return response.getRedirectionLocation();
     }
-
 
 }

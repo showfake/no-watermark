@@ -18,8 +18,8 @@ class NoWatermarkApplicationTests {
 
     @Test
     void test() throws Exception {
-        //Parser parser = parserFactory.setUrl("https://h5.pipix.com/s/l-l3SMSs8kQ/").build();
-        //System.out.println(parser.execute());
+        Parser parser = parserFactory.setUrl("https://h5.pipix.com/s/l-l3SMSs8kQ/").build();
+        System.out.println(parser.execute());
     }
 
 }
