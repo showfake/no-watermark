@@ -35,6 +35,7 @@
 | 10007 | 获取视频信息失败 |ResultParserResp|
 | 10008 | 解析媒体信息失败 |ResultParserResp|
 | 10009 | 获取真实地址失败 |ResultParserResp|
+| 10010 | Cookie过期 |ResultParserResp|
 
 **响应参数**:
 

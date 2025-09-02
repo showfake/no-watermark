@@ -20,6 +20,7 @@ public enum PlatformTypeRegexEnum {
     TIKTOK("Tik Tok", ".*tiktok.*", TikTok.class),
     TWITTER("推特", ".*x.com.*", Twitter.class),
     XIAOHONGSHU("小红书", ".*xiaohongshu.com.*|.*xhslink.*", XiaoHongShu.class),
+    WEIBO("微博", ".*m.weibo.cn.*|.*weibo.com.*", WeiBo.class),
     ;
 
     private final String platformName;

@@ -44,6 +44,7 @@ public class ParserFactory {
                 Parser parser = Optional.ofNullable(SpringUtil.getBean(platform.getParserClass())).orElseThrow(() -> new RuntimeException("解析器不存在"));
                 parser.url = url;
                 parser.platformName = platform.getPlatformName();
+                parser.key = platform.name();
                 return parser;
             }
         }

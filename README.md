@@ -15,18 +15,19 @@
 
 若解析失效或请求添加新站点请在 [Issues](https://github.com/LauZzL/no-watermark/issues) 中反馈。
 
-| 平台      | 支持域名                                                | 状态 | 图集 | 实况 |
-|---------|-----------------------------------------------------|---|---|----|
-| 推特      | `x.com` `twitter.com`                               | ✅ | ✅ | -  |
-| 皮皮虾     | `h5.pipix.com`                                      | ✅ | ✅ | -  |
-| 抖音      | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅ | ✅ | ❌️ |
-| Tik Tok | `vm.tiktok.com` `www.tiktok.com`                    | ✅ | ❌️ | ❌️ |
-| 最右      | `share.xiaochuankeji.cn`                            | ✅ | ✅ | -  |
-| 皮皮搞笑    | `h5.ippzone.com`                                    | ✅ | ✅ | -  |
-| 微视      | `v.weishi.qq.com` `video.weishi.qq.com`             | ✅ | ✅ | -  |
-| 小红书     | `xhslink.com` `www.xiaohongshu.com`                   | ✅ | ✅ | ✅ |
-| 快手      | `www.kuaishou.com`                                  | ✅ | ✅ | ❌️ |
-| 待添加     | -                                                   | - |
+| 平台      | 支持域名                                              | 视频 | 图集 | 实况 |
+|---------|---------------------------------------------------|----|---|----|
+| 推特      | `x.com` `twitter.com`                             | ✅  | ✅ | -  |
+| 皮皮虾     | `h5.pipix.com`                                    | ✅  | ✅ | -  |
+| 抖音      | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅  | ✅ | ❌️ |
+| Tik Tok | `vm.tiktok.com` `www.tiktok.com`                  | ✅  | ❌️ | ❌️ |
+| 最右      | `share.xiaochuankeji.cn`                          | ✅  | ✅ | -  |
+| 皮皮搞笑    | `h5.ippzone.com`                                  | ✅  | ✅ | -  |
+| 微视      | `v.weishi.qq.com` `video.weishi.qq.com`           | ✅  | ✅ | -  |
+| 小红书     | `xhslink.com` `www.xiaohongshu.com`               | ✅  | ✅ | ✅ |
+| 快手      | `www.kuaishou.com`                                | ✅  | ✅ | ❌️ |
+| 微博      | `weibo.com` `m.weibo.cn`                         | ✅  | ✅ | ❌️ |
+| 待添加     | -                                                 | -  |
 
 
 ## 开发环境

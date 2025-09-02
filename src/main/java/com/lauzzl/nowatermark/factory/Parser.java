@@ -2,6 +2,7 @@ package com.lauzzl.nowatermark.factory;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import com.lauzzl.nowatermark.base.domain.Result;
 import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
@@ -30,6 +31,11 @@ public abstract class Parser {
      * 平台名称
      */
     protected String platformName;
+
+    /**
+     * 缓存key
+     */
+    protected String key;
 
 
     /**
@@ -69,6 +75,19 @@ public abstract class Parser {
     public static String getId(String url, UserAgentPlatformEnum userAgentPlatformEnum, String pathName, String queryName) {
         return Optional.ofNullable(UrlUtil.getNextPathSegment(url, pathName, queryName))
                 .orElseGet(() -> UrlUtil.getNextPathSegment(HttpUtil.getRedirectUrl(url, userAgentPlatformEnum), pathName, queryName));
+    }
+
+
+    /**
+     * 获取最后一条路径
+     *
+     * @param url 网址
+     * @return {@link String }
+     */
+    public static String getLastPath(String url) {
+        if (StrUtil.isBlank(url)) return null;
+        String path = URLUtil.url(url).getPath();
+        return path.substring(path.lastIndexOf("/") + 1);
     }
 
 
