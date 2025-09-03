@@ -33,6 +33,7 @@ public class Instagram extends Parser {
         ForestProxy proxy = proxyConfig.proxy();
         String response = HttpUtil.createGet(url)
                 .setHttpProxy(proxy.getHost(), proxy.getPort())
+                .basicProxyAuth(proxy.getUsername(), proxy.getPassword())
                 .setFollowRedirects(true)
                 .execute().body();
         if (StrUtil.isBlank(response)) {
