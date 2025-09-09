@@ -17,21 +17,22 @@
 
 AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3u8player.org/)或在我们小程序中使用M3U8工具播放。
 
-| 平台        | 支持域名                                               | 视频 | 图集 | 实况 |
-|-----------|----------------------------------------------------|----|---|----|
-| 推特        | `x.com` `twitter.com`                              | ✅  | ✅ | -  |
-| 皮皮虾       | `h5.pipix.com`                                     | ✅  | ✅ | -  |
-| 抖音        | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅  | ✅ | ✅ |
-| Tik Tok   | `vm.tiktok.com` `www.tiktok.com`                   | ✅  | ❌️ | ❌️ |
-| 最右        | `share.xiaochuankeji.cn`                           | ✅  | ✅ | -  |
-| 皮皮搞笑      | `h5.ippzone.com`                                   | ✅  | ✅ | -  |
-| 微视        | `v.weishi.qq.com` `video.weishi.qq.com`            | ✅  | ✅ | -  |
-| 小红书       | `xhslink.com` `www.xiaohongshu.com`                | ✅  | ✅ | ✅ |
-| 快手        | `www.kuaishou.com`                                 | ✅  | ✅ | - |
-| 微博        | `weibo.com` `m.weibo.cn`                           | ✅  | ✅ | - |
-| AcFun     | `www.acfun.cn`                                         | ✅  | - | - |
-| Instagram | `www.instagram.com`                                         | ✅  | ✅ | - |
-| 待添加       | -                                                  | -  |
+| 平台        | 支持域名                                                | 视频 | 图集 | 实况 |
+|-----------|-----------------------------------------------------|----|----|----|
+| 推特        | `x.com` `twitter.com`                               | ✅  | ✅  | -  |
+| 皮皮虾       | `h5.pipix.com`                                      | ✅  | ✅  | -  |
+| 抖音        | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅  | ✅  | ✅ |
+| Tik Tok   | `vm.tiktok.com` `www.tiktok.com`                    | ✅  | ❌️ | ❌️ |
+| 最右        | `share.xiaochuankeji.cn`                            | ✅  | ✅  | -  |
+| 皮皮搞笑      | `h5.ippzone.com`                                    | ✅  | ✅  | -  |
+| 微视        | `v.weishi.qq.com` `video.weishi.qq.com`             | ✅  | ✅  | -  |
+| 小红书       | `xhslink.com` `www.xiaohongshu.com`                 | ✅  | ✅  | ✅ |
+| 快手        | `www.kuaishou.com`                                  | ✅  | ✅  | - |
+| 微博        | `weibo.com` `m.weibo.cn`                            | ✅  | ✅  | - |
+| AcFun     | `www.acfun.cn`                                      | ✅  | -  | - |
+| Instagram | `www.instagram.com`                                 | ✅  | ✅  | - |
+| 今日头条      | `www.toutiao.com`  `m.toutiao.com`                  | ✅  | -  | - |
+| 待添加       | -                                                   | -  |
 
 
 ## 开发环境

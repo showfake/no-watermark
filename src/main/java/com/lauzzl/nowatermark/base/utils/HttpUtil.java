@@ -18,7 +18,33 @@ public class HttpUtil {
                 .autoRedirects(false)
                 .setUserAgent(CommonUtil.getUserAgent(userAgentPlatformEnum))
                 .execute(ForestResponse.class);
-        return response.getRedirectionLocation();
+        if (response.statusIs(302)) {
+            return getRedirectUrl(response.getRedirectionLocation(), userAgentPlatformEnum);
+        }
+        return url;
+    }
+
+
+    /**
+     * 获取 TTWID，有效期一年
+     *
+     * @param aid     aid
+     * @param service 域名例如: www.toutiao.com
+     * @return {@link String } 返回ttwid
+     */
+    public static String getTtwid(int aid, String service) {
+        ForestResponse response = Forest.post("https://ttwid.bytedance.com/ttwid/union/register/")
+                .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
+                .contentTypeJson()
+                .addBody("aid", aid)
+                .addBody("service", service)
+                .addBody("region", "cn")
+                .execute(ForestResponse.class);
+        if (response.isSuccess() && response.getCookie("ttwid") != null) {
+            // cookie 有效期一年
+            return response.getCookie("ttwid").getValue();
+        }
+        return null;
     }
 
 }

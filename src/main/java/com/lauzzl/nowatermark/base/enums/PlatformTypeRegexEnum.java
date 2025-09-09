@@ -23,6 +23,7 @@ public enum PlatformTypeRegexEnum {
     WEIBO("微博", ".*m.weibo.cn.*|.*weibo.com.*", WeiBo.class),
     ACFUN("AcFun", ".*www.acfun.cn.*", AcFun.class),
     INSTAGRAM("Instagram", ".*www.instagram.com.*", Instagram.class),
+    JINRITOUTIAO("今日头条", ".*toutiao.com.*", JinRiTouTiao.class),
     ;
 
     private final String platformName;
