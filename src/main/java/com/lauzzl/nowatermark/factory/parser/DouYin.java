@@ -12,25 +12,33 @@ import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.HttpUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.sql.Struct;
 import java.util.Optional;
 
 @Slf4j
 @Component
 public class DouYin extends Parser {
 
-    private static final String BASE_URL = "https://www.iesdouyin.com/share/video/%s";
+    // 视频图集
+    private static final String VIDEO_URL = "https://www.iesdouyin.com/share/video/{}";
+
+    // 图集实况
+    private static final String SLIDE_URL = "https://www.iesdouyin.com/web/api/v2/aweme/slidesinfo/?reflow_source=reflow_page&web_id={}&device_id={}&from_did=&user_cip=&aweme_ids=%5B{}%5D&request_source=200";
 
     @Override
     public Result<ParserResp> execute() throws Exception {
-        String id = getId(url, UserAgentPlatformEnum.PHONE, "video", "modal_id");
+        String redirectUrl = HttpUtil.getRedirectUrl(url, UserAgentPlatformEnum.PHONE);
+        boolean isSlide = isSlide(redirectUrl);
+        String id = isSlide ? getId(url, UserAgentPlatformEnum.PHONE, "slides", "mid") : getId(url, UserAgentPlatformEnum.PHONE, "video", "modal_id");
         if (StrUtil.isBlank(id)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
-        String url = String.format(BASE_URL, id);
+        String url = StrUtil.replace(isSlide ? SLIDE_URL: VIDEO_URL, "{}", id);
         String content =  Forest.get(url)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.PHONE))
                 .executeAsString();
@@ -38,28 +46,30 @@ public class DouYin extends Parser {
             log.error("解析链接：{} 失败，返回结果：{}", url, content);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
-        return extract(content);
+        return extract(content, isSlide);
     }
 
 
+    private boolean isSlide(String url) {
+        return url.contains("share/slides");
+    }
 
-    private Result<ParserResp> extract(String content) {
-        // item -> loaderData['video_(id)/page'].videoInfoRes['item_list'][0]
-        // title -> item.desc
-        // author -> item.author
-        // nickname -> author.nickname
-        // avatar -> author['avatar_thumb']['url_list'][0]
-        // cover -> item.video.cover.url_list.0
-        // video -> item.video
-        // image -> item.images
-        String jsonData = ReUtil.get("_ROUTER_DATA = (.*?)</script", content, 1);
-        if (StrUtil.isBlank(jsonData)) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
-            return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
-        }
+
+    private Result<ParserResp> extract(String content, boolean isSlide) {
+        JSONObject jsonObj,item;
         ParserResp result = new ParserResp();
-        JSONObject jsonObj = JSONUtil.parseObj(jsonData);
-        JSONObject item = jsonObj.getByPath("loaderData['video_(id)/page'].videoInfoRes['item_list'][0]", JSONObject.class);
+        if (isSlide) {
+            jsonObj = JSONUtil.parseObj(content);
+            item = jsonObj.getByPath("['aweme_details'][0]", JSONObject.class);
+        } else {
+            String jsonData = ReUtil.get("_ROUTER_DATA = (.*?)</script", content, 1);
+            if (StrUtil.isBlank(jsonData)) {
+                log.error("解析链接：{} 失败，返回结果：{}", url, content);
+                return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
+            }
+            jsonObj = JSONUtil.parseObj(jsonData);
+            item = jsonObj.getByPath("loaderData['video_(id)/page'].videoInfoRes['item_list'][0]", JSONObject.class);
+        }
         if (item == null || item.isEmpty()) {
             log.error("解析链接：{} 失败，返回结果：{}", url, content);
             return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
@@ -101,7 +111,15 @@ public class DouYin extends Parser {
                             .setUrl(image.getByPath("url_list.0", String.class))
                             .setResolution(String.format("%sx%s", image.get("width"), image.get("height")))
             );
+            JSONObject video = image.getJSONObject("video");
+            if (video != null) {
+                resp.getMedias().add(
+                        new ParserResp.Media()
+                                .setType(MediaTypeEnum.LIVE)
+                                .setUrl(video.getByPath("['play_addr']['url_list'][0]", String.class))
+                                .setResolution(String.format("%sx%s", video.get("width"), video.get("height")))
+                );
+            }
         }));
     }
-
 }

@@ -21,7 +21,7 @@ AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3
 |-----------|----------------------------------------------------|----|---|----|
 | 推特        | `x.com` `twitter.com`                              | ✅  | ✅ | -  |
 | 皮皮虾       | `h5.pipix.com`                                     | ✅  | ✅ | -  |
-| 抖音        | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅  | ✅ | ❌️ |
+| 抖音        | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅  | ✅ | ✅ |
 | Tik Tok   | `vm.tiktok.com` `www.tiktok.com`                   | ✅  | ❌️ | ❌️ |
 | 最右        | `share.xiaochuankeji.cn`                           | ✅  | ✅ | -  |
 | 皮皮搞笑      | `h5.ippzone.com`                                   | ✅  | ✅ | -  |
