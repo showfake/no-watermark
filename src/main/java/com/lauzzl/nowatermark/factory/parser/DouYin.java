@@ -32,7 +32,7 @@ public class DouYin extends Parser {
         }
         String url = String.format(BASE_URL, id);
         String content =  Forest.get(url)
-                .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
+                .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.PHONE))
                 .executeAsString();
         if (!content.contains(id)) {
             log.error("解析链接：{} 失败，返回结果：{}", url, content);
@@ -60,7 +60,7 @@ public class DouYin extends Parser {
         ParserResp result = new ParserResp();
         JSONObject jsonObj = JSONUtil.parseObj(jsonData);
         JSONObject item = jsonObj.getByPath("loaderData['video_(id)/page'].videoInfoRes['item_list'][0]", JSONObject.class);
-        if (item == null || !item.isEmpty()) {
+        if (item == null || item.isEmpty()) {
             log.error("解析链接：{} 失败，返回结果：{}", url, content);
             return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
         }
