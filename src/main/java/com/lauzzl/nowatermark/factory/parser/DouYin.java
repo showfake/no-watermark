@@ -30,11 +30,15 @@ public class DouYin extends Parser {
     // 图集实况
     private static final String SLIDE_URL = "https://www.iesdouyin.com/web/api/v2/aweme/slidesinfo/?reflow_source=reflow_page&web_id={}&device_id={}&from_did=&user_cip=&aweme_ids=%5B{}%5D&request_source=200";
 
+    private static final String[] PATH_NAMES = new String[]{"slides", "video", "note"};
+
+    private static final String[] QUERY_NAMES = new String[]{"mid", "modal_id"};
+
     @Override
     public Result<ParserResp> execute() throws Exception {
         String redirectUrl = HttpUtil.getRedirectUrl(url, UserAgentPlatformEnum.PHONE);
         boolean isSlide = isSlide(redirectUrl);
-        String id = isSlide ? getId(url, UserAgentPlatformEnum.PHONE, "slides", "mid") : getId(url, UserAgentPlatformEnum.PHONE, "video", "modal_id");
+        String id = getId(redirectUrl, PATH_NAMES, QUERY_NAMES);
         if (StrUtil.isBlank(id)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }

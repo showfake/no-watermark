@@ -52,7 +52,7 @@ public abstract class Parser {
     }
 
     /**
-     * 获取帖子ID
+     * 获取帖子ID(未获取到会自动获取重定向地址)
      *
      * @param url       帖子 url
      * @param pathName  路径名称
@@ -65,7 +65,7 @@ public abstract class Parser {
 
 
     /**
-     * 获取帖子ID
+     * 获取帖子ID(未获取到会自动获取重定向地址)
      *
      * @param url       帖子 url
      * @param pathName  路径名称
@@ -75,6 +75,33 @@ public abstract class Parser {
     public static String getId(String url, UserAgentPlatformEnum userAgentPlatformEnum, String pathName, String queryName) {
         return Optional.ofNullable(UrlUtil.getNextPathSegment(url, pathName, queryName))
                 .orElseGet(() -> UrlUtil.getNextPathSegment(HttpUtil.getRedirectUrl(url, userAgentPlatformEnum), pathName, queryName));
+    }
+
+    /**
+     * 获取帖子ID
+     *
+     * @param url        帖子 url(该URL需要为最终地址)
+     * @param pathNames  路径名称
+     * @param queryNames 查询名称
+     * @return {@link String }
+     */
+    public static String getId(String url, String[] pathNames, String[] queryNames) {
+        if (StrUtil.isBlank(url)) {
+            return null;
+        }
+        for (String pathName : pathNames) {
+            String nextPathSegment = UrlUtil.getNextPathSegment(url, pathName);
+            if (StrUtil.isNotBlank(nextPathSegment)) {
+                return nextPathSegment;
+            }
+        }
+        for (String queryName : queryNames) {
+            String nextPathSegment = UrlUtil.getNextPathSegment(url, null, queryName);
+            if (StrUtil.isNotBlank(nextPathSegment)) {
+                return nextPathSegment;
+            }
+        }
+        return null;
     }
 
 
