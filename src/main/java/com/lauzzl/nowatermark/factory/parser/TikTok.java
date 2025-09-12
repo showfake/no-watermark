@@ -71,7 +71,8 @@ public class TikTok extends Parser {
                     new ParserResp.Media()
                             .setUrl(node.getStr("playAddr"))
                             .setType(MediaTypeEnum.VIDEO)
-                            .setResolution(String.format("%sx%s", node.getStr("width"), node.getStr("height")))
+                            .setHeight(node.getInt("height"))
+                            .setWidth(node.getInt("width"))
             );
             result.setCover(node.getStr("cover"));
         });

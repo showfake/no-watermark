@@ -63,7 +63,8 @@ public class AcFun extends Parser {
                     result.getMedias().add(new ParserResp.Media()
                             .setType(MediaTypeEnum.VIDEO)
                             .setUrl(representation.getStr("url"))
-                            .setResolution(String.format("%sx%s", representation.get("width"), representation.get("height")))
+                            .setHeight(representation.getInt("height"))
+                            .setWidth(representation.getInt("width"))
                     );
                 });
             });

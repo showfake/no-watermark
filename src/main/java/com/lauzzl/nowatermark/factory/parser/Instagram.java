@@ -2,6 +2,7 @@ package com.lauzzl.nowatermark.factory.parser;
 
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -31,9 +32,14 @@ public class Instagram extends Parser {
     @Override
     public Result<ParserResp> execute() throws Exception {
         ForestProxy proxy = proxyConfig.proxy();
-        String response = HttpUtil.createGet(url)
-                .setHttpProxy(proxy.getHost(), proxy.getPort())
-                .basicProxyAuth(proxy.getUsername(), proxy.getPassword())
+        HttpRequest request = HttpUtil.createGet(url);
+        if (proxy != null) {
+            request.setHttpProxy(proxy.getHost(), proxy.getPort());
+            if (StrUtil.isAllNotBlank(proxy.getUsername(), proxy.getPassword())) {
+                request.basicProxyAuth(proxy.getUsername(), proxy.getPassword());
+            }
+        }
+        String response = request
                 .setFollowRedirects(true)
                 .execute().body();
         if (StrUtil.isBlank(response)) {
@@ -72,7 +78,8 @@ public class Instagram extends Parser {
         Optional.ofNullable(itemObject.getByPath("extensions['all_video_dash_prefetch_representations'][0].representations", JSONArray.class)).ifPresent(node -> node.toList(JSONObject.class).forEach(u -> {
             result.getMedias().add(new ParserResp.Media()
                     .setUrl(u.getStr("base_url"))
-                    .setResolution(String.format("%sx%s", u.getStr("width"), u.getStr("height")))
+                    .setHeight(u.getInt("height"))
+                    .setWidth(u.getInt("width"))
                     .setType(MediaTypeEnum.VIDEO));
         }));
 
@@ -82,7 +89,8 @@ public class Instagram extends Parser {
         Optional.ofNullable(itemObject.getByPath("data['xdt_api__v1__media__shortcode__web_info'].items[0]['carousel_media']", JSONArray.class)).ifPresent(node -> node.toList(JSONObject.class).forEach(image -> {
             result.getMedias().add(new ParserResp.Media()
                     .setUrl(image.getByPath("['image_versions2'].candidates[0].url", String.class))
-                    .setResolution(String.format("%sx%s", image.getByPath("['image_versions2'].candidates[0].width"), image.getByPath("['image_versions2'].candidates[0].height")))
+                    .setHeight(image.getByPath("['image_versions2'].candidates[0].height", Integer.class))
+                    .setWidth(image.getByPath("['image_versions2'].candidates[0].width", Integer.class))
                     .setType(MediaTypeEnum.IMAGE));
         }));
     }

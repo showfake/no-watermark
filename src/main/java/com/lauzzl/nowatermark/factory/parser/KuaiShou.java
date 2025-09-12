@@ -98,7 +98,8 @@ public class KuaiShou extends Parser {
         resp.getMedias().add(new ParserResp.Media()
                 .setType(MediaTypeEnum.VIDEO)
                 .setUrl(representation.getByPath("backupUrl[0]", String.class))
-                .setResolution(String.format("%sx%s", representation.get("width"), representation.get("height")))
+                .setHeight(representation.getInt("height"))
+                .setWidth(representation.getInt("width"))
         );
     }
 
@@ -121,12 +122,13 @@ public class KuaiShou extends Parser {
         String cdn = imageObj.getByPath("atlas.cdnList[0].cdn", String.class);
         // image_uri -> atlas.list
         Iterator<String> imageUrlIterator = imageObj.getByPath("atlas.list", JSONArray.class).toList(String.class).stream().map(url -> "https://" + cdn + url).toList().iterator();
-        Iterator<String> sizeListIterator = imageObj.getByPath("atlas.size", JSONArray.class).toList(JSONObject.class).stream().map(size -> String.format("%sx%s", size.getStr("w"), size.getStr("h"))).toList().iterator();
+        Iterator<JSONObject> sizeListIterator = imageObj.getByPath("atlas.size", JSONArray.class).toList(JSONObject.class).iterator();
         while (imageUrlIterator.hasNext() && sizeListIterator.hasNext()) {
             resp.getMedias().add(new ParserResp.Media()
                     .setType(MediaTypeEnum.IMAGE)
                     .setUrl(imageUrlIterator.next())
-                    .setResolution(sizeListIterator.next())
+                    .setHeight(sizeListIterator.next().getInt("h"))
+                    .setWidth(sizeListIterator.next().getInt("w"))
             );
         }
     }

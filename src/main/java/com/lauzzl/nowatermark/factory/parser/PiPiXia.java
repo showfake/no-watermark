@@ -87,12 +87,12 @@ public class PiPiXia extends Parser {
     private void extractVideo(JSONObject obj, ParserResp resp) {
         resp.setCover(obj.getByPath("video.video_high.cover_image.url_list.0.url", String.class));
         Optional.ofNullable(obj.getByPath("video.video_high", JSONObject.class)).ifPresent(node -> {
-            String resolution = String.format("%sx%s", node.getStr("width"), node.getStr("height"));
             node.getJSONArray("url_list").toList(JSONObject.class).forEach(urlNode -> resp.getMedias().add(
                     new ParserResp.Media()
                             .setType(MediaTypeEnum.VIDEO)
                             .setUrl(urlNode.getStr("url"))
-                            .setResolution(resolution)
+                            .setHeight(node.getInt("height"))
+                            .setWidth(node.getInt("width"))
             ));
         });
     }
@@ -109,7 +109,8 @@ public class PiPiXia extends Parser {
                 new ParserResp.Media()
                         .setType(MediaTypeEnum.IMAGE)
                         .setUrl(multi_image.getByPath("url_list.0.url", String.class))
-                        .setResolution(String.format("%sx%s", multi_image.get("width"), multi_image.get("height")))
+                        .setHeight(multi_image.getInt("height"))
+                        .setWidth(multi_image.getInt("width"))
         )));
     }
 

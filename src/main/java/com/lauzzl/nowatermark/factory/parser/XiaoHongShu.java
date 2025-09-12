@@ -61,7 +61,8 @@ public class XiaoHongShu extends Parser {
             result.getMedias().add(new ParserResp.Media()
                     .setUrl(livePhoto?image.getByPath("stream.h264[0].masterUrl", String.class):image.getStr("urlDefault"))
                     .setType(livePhoto?MediaTypeEnum.LIVE:MediaTypeEnum.IMAGE)
-                    .setResolution(String.format("%sx%s", image.get("width"), image.get("height")))
+                    .setHeight(image.getInt("height"))
+                    .setWidth(image.getInt("width"))
             );
         }));
     }
@@ -71,7 +72,8 @@ public class XiaoHongShu extends Parser {
             result.getMedias().add(new ParserResp.Media()
                     .setUrl(node.getByPath("h264[0].masterUrl", String.class))
                     .setType(MediaTypeEnum.VIDEO)
-                    .setResolution(String.format("%sx%s", node.getStr("h264[0].width"), node.getStr("h264[0].height")))
+                    .setHeight(node.getByPath("h264[0].height", Integer.class))
+                    .setWidth(node.getByPath("h264[0].width", Integer.class))
             );
         });
     }

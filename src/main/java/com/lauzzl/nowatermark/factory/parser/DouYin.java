@@ -96,13 +96,13 @@ public class DouYin extends Parser {
     private void extractVideo(JSONObject obj, ParserResp resp) {
         resp.setCover(obj.getByPath("video.cover.url_list.0", String.class));
         Optional.ofNullable(obj.getByPath("video", JSONObject.class)).ifPresent(node -> {
-            String resolution = String.format("%sx%s", node.getStr("width"), node.getStr("height"));
             node.getByPath("play_addr.url_list", JSONArray.class).toList(String.class).forEach(urlNode -> resp.getMedias().add(
                     new ParserResp.Media()
                             .setType(MediaTypeEnum.VIDEO)
                             // 去掉水印
                             .setUrl(urlNode.replace("playwm", "play"))
-                            .setResolution(resolution)
+                            .setHeight(node.getInt("height"))
+                            .setWidth(node.getInt("width"))
             ));
         });
     }
@@ -113,7 +113,8 @@ public class DouYin extends Parser {
                     new ParserResp.Media()
                             .setType(MediaTypeEnum.IMAGE)
                             .setUrl(image.getByPath("url_list.0", String.class))
-                            .setResolution(String.format("%sx%s", image.get("width"), image.get("height")))
+                            .setHeight(image.getInt("height"))
+                            .setWidth(image.getInt("width"))
             );
             JSONObject video = image.getJSONObject("video");
             if (video != null) {
@@ -121,7 +122,8 @@ public class DouYin extends Parser {
                         new ParserResp.Media()
                                 .setType(MediaTypeEnum.LIVE)
                                 .setUrl(video.getByPath("['play_addr']['url_list'][0]", String.class))
-                                .setResolution(String.format("%sx%s", video.get("width"), video.get("height")))
+                                .setHeight(video.getInt("height"))
+                                .setWidth(video.getInt("width"))
                 );
             }
         }));

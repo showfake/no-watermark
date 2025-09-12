@@ -78,7 +78,8 @@ public class WeiBo extends Parser {
                 keys.forEach(key -> result.getMedias().add(new ParserResp.Media()
                         .setType(MediaTypeEnum.IMAGE)
                         .setUrl(pic.getByPath(key + ".url", String.class))
-                        .setResolution(String.format("%sx%s", pic.getByPath(key + ".width", String.class), pic.getByPath(key + ".height", String.class)))
+                        .setHeight(pic.getByPath(key + ".height", Integer.class))
+                        .setWidth(pic.getByPath(key + ".width", Integer.class))
                 ));
             });
         });
@@ -89,7 +90,8 @@ public class WeiBo extends Parser {
             result.getMedias().add(new ParserResp.Media()
                     .setType(MediaTypeEnum.VIDEO)
                     .setUrl(media.getByPath("['play_info'].url", String.class))
-                    .setResolution(String.format("%sx%s", media.getByPath("['play_info'].width", String.class), media.getByPath("['play_info'].height", String.class)))
+                    .setHeight(media.getByPath("['play_info'].height", Integer.class))
+                    .setWidth(media.getByPath("['play_info'].width", Integer.class))
             );
         }));
     }

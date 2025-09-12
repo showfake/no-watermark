@@ -114,7 +114,8 @@ public class Twitter extends Parser {
     private void extractData(JSONObject item, ParserResp result) {
         Optional.ofNullable(item.getByPath("content.itemContent['tweet_results'].result.legacy.entities.media", JSONArray.class))
                 .ifPresent(node -> node.toList(JSONObject.class).forEach(media -> {
-                    String resolution = String.format("%sx%s", media.getByPath("original_info.width"), media.getByPath("original_info.height"));
+                    int width = media.getByPath("original_info.width", Integer.class);
+                    int height = media.getByPath("original_info.height", Integer.class);
                     String type = media.getStr("type");
                     if (StrUtil.isBlank(type)) {
                         return;
@@ -127,7 +128,8 @@ public class Twitter extends Parser {
                                         new ParserResp.Media()
                                                 .setType(MediaTypeEnum.VIDEO)
                                                 .setUrl(variant.getStr("url"))
-                                                .setResolution(resolution)
+                                                .setHeight(height)
+                                                .setWidth(width)
                                 );
                             });
                         }
@@ -137,7 +139,8 @@ public class Twitter extends Parser {
                                 new ParserResp.Media()
                                         .setType(MediaTypeEnum.IMAGE)
                                         .setUrl(media.getStr("media_url_https"))
-                                        .setResolution(resolution)
+                                        .setHeight(height)
+                                        .setWidth(width)
                         );
                     }
                 }));

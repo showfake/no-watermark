@@ -23,7 +23,7 @@ public class ParserLogAspect {
     @AfterReturning(value = "log()", returning = "result")
     public void afterReturning(JoinPoint joinPoint, Result<?> result) {
         log.info("解析 {} 完成", joinPoint.getArgs());
-        log.info("是否成功: {}", result.getCode() == 0);
+        log.info("是否成功: {}", result != null && result.getCode() == 0);
         log.info("结果: {}", result);
     }
 

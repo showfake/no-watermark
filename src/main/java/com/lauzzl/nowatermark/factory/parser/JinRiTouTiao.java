@@ -91,7 +91,8 @@ public class JinRiTouTiao extends Parser {
             resp.getMedias().add(new ParserResp.Media()
                     .setType(MediaTypeEnum.VIDEO)
                     .setUrl(v.getStr("main_url"))
-                    .setResolution(String.format("%sx%s", v.getByPath("['video_meta'].vwidth", String.class), v.getByPath("['video_meta'].vheight", String.class)))
+                    .setHeight(v.getByPath("['video_meta'].vheight", Integer.class))
+                    .setWidth(v.getByPath("['video_meta'].vwidth", Integer.class))
             );
         }));
     }

@@ -56,9 +56,11 @@ public class ParserResp {
         @Schema(description = "地址")
         private String url;
 
-        @Schema(description = "分辨率")
-        private String resolution;
+        @Schema(description = "高度")
+        private Integer height;
 
+        @Schema(description = "宽度")
+        private Integer width;
 
     }
 

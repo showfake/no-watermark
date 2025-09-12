@@ -59,19 +59,20 @@ public class WeiShi extends Parser {
                     new ParserResp.Media()
                             .setType(MediaTypeEnum.IMAGE)
                             .setUrl(image.getStr("url"))
-                            .setResolution(String.format("%sx%s", image.getStr("width"), image.getStr("height")))
+                            .setHeight(image.getInt("height"))
+                            .setWidth(image.getInt("width"))
             );
         }));
     }
 
     private void extractVideo(JSONObject itemObject, ParserResp result) {
         Optional.ofNullable(itemObject.get("video", JSONObject.class)).ifPresent(node -> {
-            String resolution = String.format("%sx%s", node.getStr("width"), node.getStr("height"));
             result.getMedias().add(
                     new ParserResp.Media()
                             .setType(MediaTypeEnum.VIDEO)
                             .setUrl(itemObject.getStr("video_url"))
-                            .setResolution(resolution)
+                            .setHeight(node.getInt("height"))
+                            .setWidth(node.getInt("width"))
             );
         });
     }

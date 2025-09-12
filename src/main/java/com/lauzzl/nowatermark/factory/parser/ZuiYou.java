@@ -73,7 +73,8 @@ public class ZuiYou extends Parser {
                 new ParserResp.Media()
                         .setType(MediaTypeEnum.IMAGE)
                         .setUrl(image.getByPath("urls['540_webp'].urls[0]", String.class))
-                        .setResolution(String.format("%sx%s", image.get("w"), image.get("h")))
+                        .setHeight(image.getInt("h"))
+                        .setWidth(image.getInt("w"))
         )));
     }
 

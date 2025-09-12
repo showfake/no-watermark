@@ -61,7 +61,8 @@ public class PiPiGaoXiao extends Parser {
                 new ParserResp.Media()
                         .setType(MediaTypeEnum.IMAGE)
                         .setUrl(String.format(COVER_URL, image.get("id")))
-                        .setResolution(String.format("%sx%s", image.get("w"), image.get("h")))
+                        .setHeight(image.getInt("h"))
+                        .setWidth(image.getInt("w"))
         )));
     }
 
