@@ -7,9 +7,6 @@
 <a href="#小程序在线体验">💡 小程序</a>
 </p>
 
-## 免责声明
-
-本项目仅供学习交流，请勿用于非法用途。
 
 ## 支持平台
 
@@ -35,6 +32,18 @@ AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3
 | 待添加       | -                                                   | -  |
 
 
+
+## 预览
+
+### 图文
+
+![图文](/wiki/images/preview-1.png)
+
+### 实况
+
+![实况](/wiki/images/preview-2.png)
+
+
 ## 开发环境
 
 - Java 17
@@ -53,3 +62,8 @@ AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3
 <div align="center" >
 <img style="display: block; margin: 0 auto; " src="https://iili.io/FtOBlkX.jpg" width="200" height="200" />
 </div>
+
+
+## 免责声明
+
+本项目仅供学习交流，请勿用于非法用途。

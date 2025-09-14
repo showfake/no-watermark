@@ -105,14 +105,14 @@ public class Twitter extends Parser {
 
     private void extractInfo(JSONObject item, ParserResp result) {
         // title content.itemContent['tweet_results'].result.legacy['full_text']
-        result.setTitle(item.getByPath("content.itemContent['tweet_results'].result.legacy['full_text']", String.class));
+        result.setTitle(item.getByPath("content.itemContent['tweet_results'].result.tweet.legacy['full_text']", String.class));
         result.getAuthor()
-                .setNickname(item.getByPath("content.itemContent['tweet_results'].result.core['user_results'].result.core['screen_name']", String.class))
-                .setAvatar(item.getByPath("content.itemContent['tweet_results'].result.core['user_results'].result.avatar['image_url']", String.class));
+                .setNickname(item.getByPath("content.itemContent['tweet_results'].result.tweet.core['user_results'].result.core['screen_name']", String.class))
+                .setAvatar(item.getByPath("content.itemContent['tweet_results'].result.tweet.core['user_results'].result.avatar['image_url']", String.class));
     }
 
     private void extractData(JSONObject item, ParserResp result) {
-        Optional.ofNullable(item.getByPath("content.itemContent['tweet_results'].result.legacy.entities.media", JSONArray.class))
+        Optional.ofNullable(item.getByPath("content.itemContent['tweet_results'].result.tweet.legacy.entities.media", JSONArray.class))
                 .ifPresent(node -> node.toList(JSONObject.class).forEach(media -> {
                     int width = media.getByPath("original_info.width", Integer.class);
                     int height = media.getByPath("original_info.height", Integer.class);
