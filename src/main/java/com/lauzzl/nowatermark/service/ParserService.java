@@ -32,17 +32,12 @@ public class ParserService {
      * @param req {@link ParserReq }
      * @return {@link Result }<{@link ParserResp }>
      */
-    public Result<ParserResp> execute(ParserReq req) {
+    public Result<ParserResp> execute(ParserReq req) throws Exception {
         Parser parser = parserFactory.setUrl(extractUrl(req.getUrl())).build();
         if (parser == null) {
             return Result.failure(ErrorCode.PARSER_NOT_SUPPORT);
         }
-        try {
-            return parserFactory.build().execute();
-        } catch (Exception e) {
-            log.error("解析链接 {} 失败：{}", req.getUrl(), e.getMessage(), e);
-            return Result.failure(ErrorCode.PARSER_FAILED.code, "解析失败：" + e.getMessage());
-        }
+        return parserFactory.build().execute();
     }
 
 

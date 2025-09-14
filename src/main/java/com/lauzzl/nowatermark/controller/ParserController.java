@@ -21,7 +21,7 @@ public class ParserController {
     @Operation(summary = "解析")
     @PostMapping("executor")
     @ResponseBody
-    public Result<ParserResp> executor(@RequestBody @Validated ParserReq req) {
+    public Result<ParserResp> executor(@RequestBody @Validated ParserReq req) throws Exception {
         return parserService.execute(req);
     }
 
