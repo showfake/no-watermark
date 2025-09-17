@@ -8,6 +8,7 @@ public enum MediaTypeEnum {
     VIDEO("视频"),
     IMAGE("图集"),
     LIVE("实况"),
+    AUDIO("音频")
     ;
 
     private final String type;

@@ -24,6 +24,7 @@ public enum PlatformTypeRegexEnum {
     ACFUN("AcFun", ".*www.acfun.cn.*", AcFun.class),
     INSTAGRAM("Instagram", ".*www.instagram.com.*", Instagram.class),
     JINRITOUTIAO("今日头条", ".*toutiao.com.*", JinRiTouTiao.class),
+    BILIBILI("哔哩哔哩", ".*www.bilibili.com.*", BiliBili.class),
     ;
 
     private final String platformName;

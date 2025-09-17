@@ -50,7 +50,7 @@ public class ParserResp {
     @NoArgsConstructor
     public static class Media {
 
-        @Schema(description = "类型(VIDEO->视频,IMAGE->图集,LIVE->实况)")
+        @Schema(description = "类型(VIDEO->视频,IMAGE->图集,LIVE->实况,AUDIO->音频)")
         private MediaTypeEnum type;
 
         @Schema(description = "地址")

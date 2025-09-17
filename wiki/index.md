@@ -105,6 +105,19 @@ account:
 
 ![](./images/tw-1.png)
 
+### 哔哩哔哩
+
+> 哔哩哔哩获取的视频格式是m4s，播放或下载时需要添加Referer参数，否则会触发防盗链。
+
+哔哩哔哩设置账号cookie后可获取最高分辨率视频。
+
+哔哩哔哩视频解析时，如果视频是合集，复制链接时请确保url.query中含有p值，否则无法正常获取当前选中的集数。
+
+```
+// 该视频合集的第9集
+eg: https://www.bilibili.com/video/xxxxxx?spm_id_from=333.788.videopod.episodes&vd_source=xxxx&p=9
+```
+
 ## 代理配置
 
 在解析部分平台时需要国外网络环境，需要在 `application-${spring.profiles.active}.yml` 中配置代理信息。

@@ -1,5 +1,6 @@
 package com.lauzzl.nowatermark.factory;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
@@ -89,16 +90,20 @@ public abstract class Parser {
         if (StrUtil.isBlank(url)) {
             return null;
         }
-        for (String pathName : pathNames) {
-            String nextPathSegment = UrlUtil.getNextPathSegment(url, pathName);
-            if (StrUtil.isNotBlank(nextPathSegment)) {
-                return nextPathSegment;
+        if (!ArrayUtil.isEmpty(pathNames)) {
+            for (String pathName : pathNames) {
+                String nextPathSegment = UrlUtil.getNextPathSegment(url, pathName);
+                if (StrUtil.isNotBlank(nextPathSegment)) {
+                    return nextPathSegment;
+                }
             }
         }
-        for (String queryName : queryNames) {
-            String nextPathSegment = UrlUtil.getNextPathSegment(url, null, queryName);
-            if (StrUtil.isNotBlank(nextPathSegment)) {
-                return nextPathSegment;
+        if (!ArrayUtil.isEmpty(queryNames)) {
+            for (String queryName : queryNames) {
+                String nextPathSegment = UrlUtil.getNextPathSegment(url, null, queryName);
+                if (StrUtil.isNotBlank(nextPathSegment)) {
+                    return nextPathSegment;
+                }
             }
         }
         return null;

@@ -17,6 +17,9 @@ account:
     auth_token: require
     x_csrf_token: require
     authorization: require
+  # 哔哩哔哩账号cookie设置，填写后可获取最高画质视频
+  bilibili:
+    cookie: optional
 
 
 spring:

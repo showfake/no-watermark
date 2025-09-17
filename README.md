@@ -14,6 +14,8 @@
 
 AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3u8player.org/)或在我们小程序中使用M3U8工具播放。
 
+哔哩哔哩获取的视频格式是m4s格式，播放需要设置referer才能正常播放。
+
 | 平台        | 支持域名                                                | 视频 | 图集 | 实况 |
 |-----------|-----------------------------------------------------|----|----|----|
 | 推特        | `x.com` `twitter.com`                               | ✅  | ✅  | -  |
@@ -29,6 +31,7 @@ AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3
 | AcFun     | `www.acfun.cn`                                      | ✅  | -  | - |
 | Instagram | `www.instagram.com`                                 | ✅  | ✅  | - |
 | 今日头条      | `www.toutiao.com`  `m.toutiao.com`                  | ✅  | -  | - |
+| 哔哩哔哩      | `www.bilibili.com`                 | ✅  | -  | - |
 | 待添加       | -                                                   | -  |
 
 
