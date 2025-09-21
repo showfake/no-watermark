@@ -25,6 +25,7 @@ public enum PlatformTypeRegexEnum {
     INSTAGRAM("Instagram", ".*www.instagram.com.*", Instagram.class),
     JINRITOUTIAO("今日头条", ".*toutiao.com.*", JinRiTouTiao.class),
     BILIBILI("哔哩哔哩", ".*www.bilibili.com.*", BiliBili.class),
+    YANGSHIPIN("央视频", ".*w.yangshipin.cn.*|.*www.yspapp.cn.*", YangShiPin.class),
     ;
 
     private final String platformName;
