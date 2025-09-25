@@ -1,6 +1,7 @@
 package com.lauzzl.nowatermark.service;
 
 import cn.hutool.core.lang.PatternPool;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
@@ -37,7 +38,11 @@ public class ParserService {
         if (parser == null) {
             return Result.failure(ErrorCode.PARSER_NOT_SUPPORT);
         }
-        return parserFactory.build().execute();
+        Result<ParserResp> result = parserFactory.build().execute();
+        if (ObjectUtil.isEmpty(result.getData().getMedias())) {
+            return Result.failure(ErrorCode.PARSER_NOT_FOUND_MEDIA);
+        }
+        return result;
     }
 
 
