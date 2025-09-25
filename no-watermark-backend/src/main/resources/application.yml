@@ -1,0 +1,33 @@
+server:
+  port: 10010
+
+spring:
+  application:
+    name: no-watermark
+    version: 0.1.0
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+forest:
+  connect-timeout: 30000
+  read-timeout: 30000
+  log-enabled: false
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+
+# 缓存设置
+redis:
+  cache:
+    cookie-key: no_watermark:cookie:%s

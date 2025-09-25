@@ -10,12 +10,6 @@
 
 ## 支持平台
 
-若解析失效或请求添加新站点请在 [Issues](https://github.com/LauZzL/no-watermark/issues) 中反馈。
-
-AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3u8player.org/)或在我们小程序中使用M3U8工具播放。
-
-哔哩哔哩获取的视频格式是m4s格式，播放需要设置referer才能正常播放。
-
 | 平台        | 支持域名                                              | 视频 | 图集 | 实况 |
 |-----------|---------------------------------------------------|----|----|----|
 | 推特        | `x.com` `twitter.com`                             | ✅  | ✅  | -  |
@@ -36,19 +30,39 @@ AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3
 | 待添加       | -                                                 | -  |
 
 
+## 构建
 
-## 预览
+### 前端
 
-### 图文
+> [#2980](https://github.com/DouyinFE/semi-design/issues/2980) React19 中Toast中的静态方法报错
 
-![图文](/wiki/images/preview-1.png)
+```shell
+cd backend
+# 安装依赖
+yarn install
+# 启动开发环境
+yarn dev
+```
 
-### 实况
+### 后端
 
-![实况](/wiki/images/preview-2.png)
-
+```shell
+cd backend
+# 安装依赖
+./mvnw clean install
+# 运行
+./mvnw spring-boot:run -D spring-boot.run.jvmArguments="-Dspring.profiles.active=dev"
+```
 
 ## 开发环境
+
+### 前端
+
+- React 18
+- TypeScript
+- Semi Design
+
+### 后端
 
 - Java 17
 - Spring Boot 3
@@ -60,6 +74,10 @@ AcFun获取的视频是m3u8格式，在线播放可以到[m3u8player](https://m3
 - 你可以通过 [PR](https://github.com/LauZzL/no-watermark/pulls) 对项目代码做出贡献
 - 你可以通过 [Issues](https://github.com/LauZzL/no-watermark/issues) 提交问题或提出建议
 
+
+## 预览
+
+![frontend](/wiki/images/preview-frontend.png)
 
 ## 小程序在线体验
 
