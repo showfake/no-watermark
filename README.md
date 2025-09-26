@@ -27,7 +27,9 @@
 | 今日头条      | `www.toutiao.com`  `m.toutiao.com`                | ✅  | -  | - |
 | 哔哩哔哩      | `www.bilibili.com`                                | ✅  | -  | - |
 | 央视频       | `w.yangshipin.cn`  `www.yspapp.cn`          | ✅  | -  | - |
-| 待添加       | -                                                 | -  |
+| Threads | `www.threads.com` | ✅ | ✅ | - |
+| Pinterest | `www.pinterest.com` `pin.it` | ✅ | ✅ | - |
+| 待添加       | -                                                 | -  |||
 
 
 ## 构建
