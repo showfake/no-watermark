@@ -2,7 +2,6 @@ package com.lauzzl.nowatermark.factory;
 
 
 import cn.hutool.extra.spring.SpringUtil;
-import com.lauzzl.nowatermark.base.enums.PlatformTypeRegexEnum;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -39,12 +38,12 @@ public class ParserFactory {
      * @return {@link Parser }
      */
     public Parser build() {
-        for (PlatformTypeRegexEnum platform : PlatformTypeRegexEnum.values()) {
+        for (Platform platform : Platform.getAllPlatforms()) {
             if (url.matches(platform.getRegex())) {
                 Parser parser = Optional.ofNullable(SpringUtil.getBean(platform.getParserClass())).orElseThrow(() -> new RuntimeException("解析器不存在"));
                 parser.url = url;
                 parser.platformName = platform.getPlatformName();
-                parser.key = platform.name();
+                parser.key = platform.getPlatformName();
                 return parser;
             }
         }

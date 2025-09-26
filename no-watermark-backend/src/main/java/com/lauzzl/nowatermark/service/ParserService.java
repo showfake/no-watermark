@@ -39,7 +39,7 @@ public class ParserService {
             return Result.failure(ErrorCode.PARSER_NOT_SUPPORT);
         }
         Result<ParserResp> result = parserFactory.build().execute();
-        if (ObjectUtil.isEmpty(result.getData().getMedias())) {
+        if (result.getCode() != 0 && (ObjectUtil.isEmpty(result.getData()) || ObjectUtil.isEmpty(result.getData().getMedias()))) {
             return Result.failure(ErrorCode.PARSER_NOT_FOUND_MEDIA);
         }
         return result;
