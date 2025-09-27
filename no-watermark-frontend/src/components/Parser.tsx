@@ -13,13 +13,13 @@ export const Parser = () => {
   useMount(async () => {
     try {
       const res = await api.support();
-    if (res.code !== 0) {
-      Toast.error(`获取支持平台失败：${res}`);
-      return;
-    }
-    setPlatforms(res.data);
+      if (res.code !== 0) {
+        Toast.error(`获取支持平台失败：${res}`);
+        return;
+      }
+      setPlatforms(res.data);
     } catch (error) {
-      console.error('获取支持平台失败', error)
+      console.error("获取支持平台失败", error);
       Toast.error(`获取支持平台失败：${error}`);
     }
   });
@@ -35,7 +35,7 @@ export const Parser = () => {
   });
 
   if (error) {
-    console.error('解析出现异常', error)
+    console.error("解析出现异常", error);
     Toast.error(`异常：${error.message}`);
   }
 
@@ -71,7 +71,10 @@ export const Parser = () => {
           <h2>支持平台</h2>
           <div className="grid grid-cols-4 xl:grid-cols-8 w-full p-1">
             {platforms.map((item) => (
-              <div key={item.name} className="flex items-center justify-center p-1">
+              <div
+                key={item.name}
+                className="flex items-center justify-center p-1"
+              >
                 <Image
                   className="rounded-[8px]"
                   width={64}
