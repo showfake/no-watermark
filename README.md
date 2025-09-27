@@ -29,6 +29,8 @@
 | 央视频       | `w.yangshipin.cn`  `www.yspapp.cn`          | ✅  | -  | - |
 | Threads | `www.threads.com` | ✅ | ✅ | - |
 | Pinterest | `www.pinterest.com` `pin.it` | ✅ | ✅ | - |
+| Weverse | `weverse.io` | - | ✅ | - |
+| Vimeo | `vimeo.com` | ✅ | ✅ | - |
 | 待添加       | -                                                 | -  |||
 
 
