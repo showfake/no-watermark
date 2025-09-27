@@ -131,6 +131,20 @@ public class Platform {
             Pinterest.class
     );
 
+    public static final Platform Weverse = new Platform(
+            "Weverse",
+            ".*weverse.io.*",
+            "https://iili.io/K0ygPvp.png",
+            Weverse.class
+    );
+
+    public static final Platform Vimeo = new Platform(
+            "Vimeo",
+            ".*vimeo.com.*",
+            "https://iili.io/K1HZw9n.md.png",
+            Vimeo.class
+    );
+
 
     private final String platformName;
     private final String regex;

@@ -78,6 +78,19 @@ public abstract class Parser {
                 .orElseGet(() -> UrlUtil.getNextPathSegment(HttpUtil.getRedirectUrl(url, userAgentPlatformEnum), pathName, queryName));
     }
 
+    public static String getId(String url, String pathName, String queryName) {
+        if (StrUtil.isBlank(url)) {
+            return null;
+        }
+        if (StrUtil.isNotBlank(pathName)) {
+            return UrlUtil.getNextPathSegment(url, pathName);
+        }
+        if (StrUtil.isNotBlank(queryName)) {
+            return UrlUtil.getNextPathSegment(url, null, queryName);
+        }
+        return null;
+    }
+
     /**
      * 获取帖子ID
      *

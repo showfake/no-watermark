@@ -2,6 +2,9 @@ package com.lauzzl.nowatermark.base.utils;
 
 import cn.hutool.crypto.Mode;
 import cn.hutool.crypto.Padding;
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.crypto.digest.HMac;
+import cn.hutool.crypto.digest.HmacAlgorithm;
 import cn.hutool.crypto.symmetric.AES;
 
 import java.nio.charset.Charset;
@@ -15,7 +18,7 @@ import java.nio.charset.Charset;
 public class CryptoUtil {
 
     /**
-     * 艾森地穴
+     * aes加密
      *
      * @param data    明文
      * @param key     key
@@ -34,5 +37,26 @@ public class CryptoUtil {
             return aes.encryptBase64(data, charset);
         }
     }
+
+    /**
+     * HMAC
+     *
+     * @param data          数据
+     * @param key           钥匙
+     * @param hmacAlgorithm HMAC算法
+     * @param output        输出(hex/base64)
+     * @param charset       字符集
+     * @return {@link String }
+     */
+    public static String Hmac(String data, byte[] key, HmacAlgorithm hmacAlgorithm, String output, Charset charset) {
+        HMac hmac = DigestUtil.hmac(hmacAlgorithm, key);
+        if (output.equals("hex")) {
+            return hmac.digestHex(data, charset);
+        } else {
+            return hmac.digestBase64(data, false);
+        }
+    }
+
+
 
 }
