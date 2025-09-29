@@ -1,11 +1,8 @@
-import { Toast, VideoPlayer, Space, Button } from "@douyinfe/semi-ui";
+import { Toast, Space, Button } from "@douyinfe/semi-ui";
 import { IconPlay } from "@douyinfe/semi-icons";
 import type { MediaInfo } from "../types/types";
-import { useState } from "react";
 
 export const Media = ({ data }: { data: MediaInfo }) => {
-
-  const [playUrl, setPlayUrl] = useState<string | null>(null);
 
   const copyText = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -71,23 +68,13 @@ export const Media = ({ data }: { data: MediaInfo }) => {
             <Button
               icon={<IconPlay />}
               key={index}
-              onClick={() => {
-                setPlayUrl(item.url);
-              }}
+              onClick={()=>window.open(item.url)}
             >
               {getBtnText(item, index)}
             </Button>
           );
         })}
       </Space>
-      {data?.medias && playUrl && (
-        <VideoPlayer
-          src={playUrl}
-          poster={data.cover}
-          crossOrigin="anonymous"
-          width={"100%"}
-        ></VideoPlayer>
-      )}
     </div>
   );
 };
