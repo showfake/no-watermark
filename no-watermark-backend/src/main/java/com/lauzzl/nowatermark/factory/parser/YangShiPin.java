@@ -126,8 +126,11 @@ public class YangShiPin extends Parser {
         }
         long qn = o;
         String encryptContent = "|" + qn + data;
-        System.out.println(encryptContent);
-        String encrypted = CryptoUtil.AESEncrypt(encryptContent, Hex.decodeHex("4E2918885FD98109869D14E0231A0BF4"), Hex.decodeHex("16B17E519DDD0CE5B79D7A63A4DD801C"), Mode.CBC, Padding.PKCS5Padding, "hex", Charset.defaultCharset());
+        String encrypted = CryptoUtil.Aes(
+                Hex.decodeHex("4E2918885FD98109869D14E0231A0BF4"),
+                Hex.decodeHex("16B17E519DDD0CE5B79D7A63A4DD801C"),
+                Mode.CBC,
+                Padding.PKCS5Padding).encryptHex(encryptContent);
         return "--01" + encrypted.toUpperCase();
     }
 

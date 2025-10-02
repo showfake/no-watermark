@@ -19,7 +19,6 @@ import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
@@ -32,7 +31,6 @@ public class Weverse extends Parser {
     private static final String ENCRYPT_KEY = "1b9cb6378d959b45714bec49971ade22e6e24e42";
     private static final String ENCRYPT_DATA = "/post/v1.0/post-%s?appId=be4d79eb8fc7bd008ee82c8ec4ff6fd4&fieldSet=postV1&fields=recommendProductSlot&gcc=US&language=zh-cn&os=WEB&platform=WEB&wpf=pc%s";
     private static final HmacAlgorithm ENCRYPT_ALGORITHM = HmacAlgorithm.HmacSHA1;
-    private static final String ENCRYPT_OUTPUT = "base64";
 
     @Override
     public Result<ParserResp> execute() throws Exception {
@@ -41,7 +39,7 @@ public class Weverse extends Parser {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
         String timestamp = String.valueOf(System.currentTimeMillis());
-        String wmd = CryptoUtil.Hmac(String.format(ENCRYPT_DATA, postId, timestamp), ENCRYPT_KEY.getBytes(), ENCRYPT_ALGORITHM, ENCRYPT_OUTPUT, Charset.defaultCharset());
+        String wmd = CryptoUtil.Hmac(ENCRYPT_KEY.getBytes(), ENCRYPT_ALGORITHM).digestBase64(String.format(ENCRYPT_DATA, postId, timestamp), false);
         wmd = RFC3986.QUERY_PARAM_VALUE_STRICT.encode(wmd, StandardCharsets.UTF_8);
         ForestResponse response = Forest.get(String.format(BASE_URL, postId))
                 .addQuery("appId", APP_ID)
