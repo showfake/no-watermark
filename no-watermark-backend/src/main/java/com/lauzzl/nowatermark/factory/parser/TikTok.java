@@ -9,10 +9,11 @@ import com.dtflys.forest.http.ForestProxy;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.config.ProxyConfig;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
 import com.lauzzl.nowatermark.factory.Parser;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -22,42 +23,39 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class TikTok extends Parser {
+public class TikTok implements Parser {
 
     @Resource
     private ProxyConfig proxyConfig;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         ForestProxy proxy = proxyConfig.proxy();
         String response = Forest.get(url)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .proxy(proxy)
                 .executeAsString();
         if (StrUtil.isBlank(response)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
-        return extract(response);
-    }
-
-    private Result<ParserResp> extract(String content) {
-        String jsonData = ReUtil.get("webapp.video-detail\":(.*?),\"webapp.a-b\":", content, 1);
+        String jsonData = ReUtil.get("webapp.video-detail\":(.*?),\"webapp.a-b\":", response, 1);
         if (StrUtil.isBlank(jsonData)) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
+        return extract(jsonData);
+    }
+
+    private Result<ParserResp> extract(String jsonData) {
         ParserResp result = new ParserResp();
         JSONObject jsonObj = JSONUtil.parseObj(jsonData);
         // itemInfo.itemStruct
         JSONObject item = jsonObj.getByPath("itemInfo.itemStruct", JSONObject.class);
-        if (item == null || item.isEmpty()) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
-            return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
-        }
         extractInfo(item, result);
         extractVideo(item, result);
         extractImage(item, result);
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

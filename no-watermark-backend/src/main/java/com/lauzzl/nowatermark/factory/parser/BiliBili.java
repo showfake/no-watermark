@@ -9,11 +9,12 @@ import com.dtflys.forest.http.ForestCookie;
 import com.dtflys.forest.http.ForestRequest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
 import com.lauzzl.nowatermark.base.utils.HttpUtil;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ import java.util.Arrays;
 
 @Component
 @Slf4j
-public class BiliBili extends Parser {
+public class BiliBili implements Parser {
 
     @Value("${account.bilibili.cookie}")
     private String cookie;
@@ -35,11 +36,11 @@ public class BiliBili extends Parser {
 
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String redirectUrl = HttpUtil.getRedirectUrl(url, UserAgentPlatformEnum.DEFAULT);
-        String bVid = getId(redirectUrl, PATH_NAMES, null);
+        String bVid = UrlUtil.getId(redirectUrl, PATH_NAMES, null);
         // 视频合集当前集数
-        String p = getId(redirectUrl, null, QUERY_NAMES);
+        String p = UrlUtil.getId(redirectUrl, null, QUERY_NAMES);
         if (StrUtil.isBlank(bVid)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
@@ -75,17 +76,17 @@ public class BiliBili extends Parser {
                 .addQuery("from_client", "BROWSER")
                 .addHeader("Referer", url)
                 .executeAsString();
-        return extract(response, jsonObject, p);
-    }
-
-    private Result<ParserResp> extract(String content, JSONObject jsonObject, String p) {
-        ParserResp result = new ParserResp();
-        JSONObject playObj = JSONUtil.parseObj(content);
-        int code = playObj.getInt("code");
+        JSONObject playObj = JSONUtil.parseObj(response);
+        int code = jsonObject.getInt("code");
         if (code != 0) {
-            log.error("解析链接：{} 错误，返回结果：{}", url, content);
+            log.error("解析链接：{} 错误，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
         }
+        return extract(jsonObject, playObj, p);
+    }
+
+    private Result<ParserResp> extract(JSONObject jsonObject, JSONObject playObj, String p) {
+        ParserResp result = new ParserResp();
         extractVideo(playObj, result);
         extractAudio(playObj, result);
         extractInfo(jsonObject, result, p);

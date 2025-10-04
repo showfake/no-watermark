@@ -2,11 +2,14 @@ package com.lauzzl.nowatermark;
 
 import com.lauzzl.nowatermark.factory.Parser;
 import com.lauzzl.nowatermark.factory.ParserFactory;
+import com.lauzzl.nowatermark.factory.parser.WeChatMP;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class NoWatermarkApplicationTests {
 
     @Autowired
@@ -18,8 +21,8 @@ class NoWatermarkApplicationTests {
 
     @Test
     void test() throws Exception {
-        Parser parser = parserFactory.setUrl("https://h5.pipix.com/s/l-l3SMSs8kQ/").build();
-        System.out.println(parser.execute());
+        Parser parser = parserFactory.createParser("https://h5.pipix.com/s/l-l3SMSs8kQ/");
+        System.out.println(parser.execute("https://h5.pipix.com/s/l-l3SMSs8kQ/"));
     }
 
 }

@@ -7,10 +7,12 @@ import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class PiPiGaoXiao extends Parser {
+public class PiPiGaoXiao implements Parser {
 
     private static final String BASE_URL = "https://h5.ippzone.com/ppapi/share/fetch_content";
     private static final String COVER_URL = "https://file.ippzone.com/img/frame/id/%s";
@@ -27,8 +29,11 @@ public class PiPiGaoXiao extends Parser {
 
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
-        String id = getId(url, UserAgentPlatformEnum.DEFAULT, "post", "pid");
+    public Result<ParserResp> execute(String url) throws Exception {
+        String id = UrlUtil.getId(url,"post", "pid");
+        if (StrUtil.isBlank(id)) {
+            return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
+        }
         String response = Forest.post(BASE_URL)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .contentTypeJson()
@@ -36,6 +41,7 @@ public class PiPiGaoXiao extends Parser {
                 .addBody("type", TYPE)
                 .executeAsString();
         if (StrUtil.isBlank(response)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
         return extract(response);
@@ -45,14 +51,10 @@ public class PiPiGaoXiao extends Parser {
         ParserResp result = new ParserResp();
         JSONObject jsonObject = JSONUtil.parseObj(content);
         JSONObject dataObject = jsonObject.getByPath("data.post", JSONObject.class);
-        if (dataObject == null || dataObject.isEmpty()) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
-            return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
-        }
         extractInfo(dataObject, result);
         extractVideo(dataObject, result);
         extractImage(dataObject, result);
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

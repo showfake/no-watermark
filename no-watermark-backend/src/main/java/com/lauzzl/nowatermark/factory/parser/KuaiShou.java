@@ -8,10 +8,11 @@ import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,53 +21,44 @@ import java.util.*;
 
 @Component
 @Slf4j
-public class KuaiShou extends Parser {
+public class KuaiShou implements Parser {
 
 
     private static final String AUTHOR_PREFIX = "VisionVideoDetailAuthor:";
     private static final String VIDEO_DETAIL_PREFIX = "VisionVideoDetailPhoto:";
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String response = Forest.get(url)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .autoRedirects(true)
                 .executeAsString();
-        if (StrUtil.isBlank(response)) {
+        if (StrUtil.isBlank(response) || !StrUtil.containsAny(response, "__APOLLO_STATE__", "INIT_STATE")) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
-        return extract(response);
+        String videoJsonStr = ReUtil.get("__APOLLO_STATE__=(.*?);\\(function", response, 1);
+        String imageJsonStr = ReUtil.get("INIT_STATE = (.*?)</script>", response, 1);
+        if (StrUtil.isAllBlank(videoJsonStr, imageJsonStr)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
+            return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
+        }
+        return extract(videoJsonStr, imageJsonStr);
     }
 
 
-    private Result<ParserResp> extract(String content) {
-        if (!StrUtil.containsAny(content, "__APOLLO_STATE__", "INIT_STATE")) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
-            return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
-        }
-        // 获取json信息
-        // video_client -> defaultClient
-        // video_author_name -> video_client['VisionVideoDetailAuthor:${authorId}'].name
-        // video_author_avatar -> video_client['VisionVideoDetailAuthor:${authorId}'].headerUrl
-        String videoJsonData = ReUtil.get("__APOLLO_STATE__=(.*?);\\(function", content, 1);
-        String imageJsonData = ReUtil.get("INIT_STATE = (.*?)</script>", content, 1);
-        if (StrUtil.isAllBlank(videoJsonData, imageJsonData)) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
-            return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
-        }
+    private Result<ParserResp> extract(String videoJsonStr, String imageJsonStr) {
         ParserResp result = new ParserResp();
-        // 处理视频
-        Optional.ofNullable(videoJsonData).ifPresent(v -> {
-            JSONObject videoObject = JSONUtil.parseObj(v);
+        if (StrUtil.isNotBlank(videoJsonStr)) {
+            JSONObject videoObject = JSONUtil.parseObj(videoJsonStr);
             videoObject = videoObject.get("defaultClient", JSONObject.class);
             extractVideo(videoObject, result);
-        });
-        // 处理图片
-        Optional.ofNullable(imageJsonData).ifPresent(v -> {
-            JSONObject imageObject = JSONUtil.parseObj(v);
+        }
+        if (StrUtil.isNotBlank(imageJsonStr)) {
+            JSONObject imageObject = JSONUtil.parseObj(imageJsonStr);
             extractImage(imageObject, result);
-        });
-        resetCover(result);
+        }
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

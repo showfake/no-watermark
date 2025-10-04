@@ -1,7 +1,7 @@
 package com.lauzzl.nowatermark.controller;
 
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.factory.Platform;
+import com.lauzzl.nowatermark.factory.enums.Platform;
 import com.lauzzl.nowatermark.base.model.resp.SupportResp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +24,9 @@ public class SupportController {
     public Result<List<SupportResp>> support() {
 
         return Result.success(
-                Platform.getAllPlatforms().stream().map(item -> new SupportResp(item.getPlatformName(), item.getLogo())).toList()
+                Arrays.stream(Platform.values())
+                        .map(platform -> new SupportResp(platform.getPlatformName(), platform.getLogo()))
+                        .toList()
         );
     }
 

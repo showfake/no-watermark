@@ -3,16 +3,18 @@ package com.lauzzl.nowatermark.factory.parser;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.dtflys.forest.http.ForestProxy;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.config.ProxyConfig;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
+import com.lauzzl.nowatermark.base.utils.HttpUtil;
 import com.lauzzl.nowatermark.base.utils.JsonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -24,33 +26,28 @@ import java.util.regex.Pattern;
 
 @Component
 @Slf4j
-public class Instagram extends Parser {
+public class Instagram implements Parser {
 
     @Resource
     private ProxyConfig proxyConfig;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         ForestProxy proxy = proxyConfig.proxy();
-        HttpRequest request = HttpUtil.createGet(url);
-        if (proxy != null) {
-            request.setHttpProxy(proxy.getHost(), proxy.getPort());
-            if (StrUtil.isAllNotBlank(proxy.getUsername(), proxy.getPassword())) {
-                request.basicProxyAuth(proxy.getUsername(), proxy.getPassword());
-            }
-        }
+        String shortId = UrlUtil.getLastPath(url);
+        HttpRequest request = HttpUtil.getHttpRequest(url, proxy);
         String response = request
                 .setFollowRedirects(true)
                 .execute().body();
         if (StrUtil.isBlank(response)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
-        return extract(response);
+        return extract(response, shortId);
     }
 
-    private Result<ParserResp> extract(String response) {
+    private Result<ParserResp> extract(String response, String shortId) {
         ParserResp result = new ParserResp();
-        String shortId = getLastPath(url);
         List<String> allGroups = ReUtil.getAllGroups(Pattern.compile("data-sjs>(.*?)</script"), response, false, true);
         for (String group : allGroups) {
             if (StrUtil.containsAll(group, shortId, "RelayPrefetchedStreamCache", "adp_PolarisPostRootQueryRelayPreloader")) {
@@ -62,7 +59,7 @@ public class Instagram extends Parser {
                 }
             }
         }
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

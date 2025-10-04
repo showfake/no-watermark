@@ -34,11 +34,12 @@ public class ParserService {
      * @return {@link Result }<{@link ParserResp }>
      */
     public Result<ParserResp> execute(ParserReq req) throws Exception {
-        Parser parser = parserFactory.setUrl(extractUrl(req.getUrl())).build();
+        String url = extractUrl(req.getUrl());
+        Parser parser = parserFactory.createParser(url);
         if (parser == null) {
             return Result.failure(ErrorCode.PARSER_NOT_SUPPORT);
         }
-        Result<ParserResp> result = parserFactory.build().execute();
+        Result<ParserResp> result = parser.execute(url);
         if (result.getCode() != 0 && (ObjectUtil.isEmpty(result.getData()) || ObjectUtil.isEmpty(result.getData().getMedias()))) {
             return Result.failure(ErrorCode.PARSER_NOT_FOUND_MEDIA);
         }

@@ -8,7 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
@@ -18,28 +18,30 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static com.lauzzl.nowatermark.base.utils.ParserResultUtils.resetCover;
+
 @Component
 @Slf4j
-public class AcFun extends Parser {
+public class AcFun implements Parser {
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String response = Forest.get(url)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .executeAsString();
         if (StrUtil.isBlank(response)) {
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
-        return extract(response);
-    }
-
-    private Result<ParserResp> extract(String response) {
         String data = ReUtil.get("window.videoInfo = (.*?);\\n", response, 1);
         if (StrUtil.isBlank(data)) {
             log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
-        ParserResp resp = new ParserResp();
         JSONObject jsonObj = JSONUtil.parseObj(data);
+        return extract(jsonObj);
+    }
+
+    private Result<ParserResp> extract(JSONObject jsonObj) {
+        ParserResp resp = new ParserResp();
         extractInfo(jsonObj, resp);
         extractVideo(jsonObj, resp);
         extractImage(jsonObj, resp);

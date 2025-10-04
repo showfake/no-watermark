@@ -1,4 +1,4 @@
-package com.lauzzl.nowatermark.base.enums;
+package com.lauzzl.nowatermark.factory.enums;
 
 import lombok.Getter;
 

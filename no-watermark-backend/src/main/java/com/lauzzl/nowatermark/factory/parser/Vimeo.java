@@ -2,7 +2,6 @@ package com.lauzzl.nowatermark.factory.parser;
 
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
@@ -10,10 +9,11 @@ import com.dtflys.forest.http.ForestRequest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.config.ProxyConfig;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public class Vimeo extends Parser {
+public class Vimeo implements Parser {
 
     @Resource
     private ProxyConfig proxyConfig;
@@ -39,23 +39,23 @@ public class Vimeo extends Parser {
     private StringRedisTemplate redisTemplate;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String authorization = getAuthorization();
         if (StrUtil.isBlank(authorization)) {
-            return Result.failure(ErrorCode.PARSER_FAILED);
+            return Result.failure(ErrorCode.PARSER_COOKIE_EXPIRED);
         }
         ForestRequest<?> request = Forest.get(url)
                 .setUserAgent("1")
                 .setProxy(proxyConfig.proxy())
                 .setHost("vimeo.com");
         String response = request.executeAsString();
-        String vid = getLastPath(url);
+        String vid = UrlUtil.getLastPath(url);
         if (StrUtil.isBlank(vid)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
         String signature = ReUtil.get(String.format("video-signature-%s\" content=\"(.*?)\"", vid), response, 1);
         if (StrUtil.isBlank(signature)) {
-            log.error("{} 获取signature失败", url);
+            log.error("{} 获取signature失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
         String data = request.url(String.format("https://api.vimeo.com/videos/%s?anon_signature=%s&fields=download", vid, signature))
@@ -64,13 +64,14 @@ public class Vimeo extends Parser {
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .executeAsString();
         if (!StrUtil.contains(data, "download")) {
-            log.error("{} 获取data失败", url);
+            log.error("{} 获取data失败，返回结果：{}", url, data);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
         return extract(response, data);
     }
 
     private String getAuthorization() {
+        String key = this.getClass().getSimpleName();
         String cookie = redisTemplate.opsForValue().get(String.format(cookieKey, key));
         if (StrUtil.isNotBlank(cookie)) {
             return cookie;
@@ -78,7 +79,6 @@ public class Vimeo extends Parser {
         String response = Forest.get("https://vimeo.com/_next/viewer").proxy(proxyConfig.proxy()).executeAsString();
         String authorization = ReUtil.get("jwt\":\"(.*?)\"", response, 1);
         if (StrUtil.isBlank(authorization)) {
-            log.error("{} 获取authorization失败", url);
             return null;
         }
         authorization = "jwt " + authorization;

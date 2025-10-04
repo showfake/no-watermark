@@ -8,10 +8,11 @@ import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,17 +21,18 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class XiaoHongShu extends Parser {
+public class XiaoHongShu implements Parser {
 
 
     private String note_id;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String response = Forest.get(url)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .executeAsString();
         if (StrUtil.isBlank(response)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
         response = ReUtil.get("window.__INITIAL_STATE__=(.*?)</script", response, 1);
@@ -43,14 +45,10 @@ public class XiaoHongShu extends Parser {
         // noteData.data.noteData
         note_id = jsonObject.getByPath("note.firstNoteId", String.class);
         JSONObject noteData = jsonObject.getByPath("note", JSONObject.class);
-        if (noteData == null || noteData.isEmpty() || StrUtil.isBlank(note_id)) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, response);
-            return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
-        }
         extractInfo(noteData, result);
         extractVideo(noteData, result);
         extractImage(noteData, result);
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

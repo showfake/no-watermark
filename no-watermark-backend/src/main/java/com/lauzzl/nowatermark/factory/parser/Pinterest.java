@@ -10,10 +10,11 @@ import com.dtflys.forest.http.ForestResponse;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.config.ProxyConfig;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
 import com.lauzzl.nowatermark.factory.Parser;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,13 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 @Component
 @Slf4j
-public class Pinterest extends Parser {
+public class Pinterest implements Parser {
 
     @Resource
     private ProxyConfig proxyConfig;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String result;
         ForestRequest<?> request = Forest.get(url)
                 .setProxy(proxyConfig.proxy())
@@ -41,6 +42,7 @@ public class Pinterest extends Parser {
         }
         String data = ReUtil.get("<script data-relay-response=\"true\" type=\"application/json\">(.*?)</script>", result, 1);
         if (StrUtil.isBlank(data)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, result);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
         return extract(data);
@@ -52,7 +54,7 @@ public class Pinterest extends Parser {
         extractInfo(jsonObject, result);
         extractImage(jsonObject, result);
         extractVideo(jsonObject, result);
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

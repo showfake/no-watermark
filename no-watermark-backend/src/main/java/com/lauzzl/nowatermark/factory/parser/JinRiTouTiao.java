@@ -9,7 +9,7 @@ import com.dtflys.forest.Forest;
 import com.dtflys.forest.http.ForestCookie;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -29,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public class JinRiTouTiao extends Parser {
+public class JinRiTouTiao implements Parser {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -38,7 +37,8 @@ public class JinRiTouTiao extends Parser {
     private String cookieKey;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
+        String key = this.getClass().getSimpleName();
         String ttwid = redisTemplate.opsForValue().get(String.format(cookieKey, key));
         if (StrUtil.isBlank(ttwid)) {
             ttwid = HttpUtil.getTtwid(24, "www.toutiao.com");
@@ -52,18 +52,10 @@ public class JinRiTouTiao extends Parser {
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .addCookie(new ForestCookie("ttwid", ttwid), false)
                 .executeAsString();
-        if (StrUtil.isBlank(response)) {
-            return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
-        }
-        return extract(response);
-    }
-
-    private Result<ParserResp> extract(String response) throws UnsupportedEncodingException {
-        if (!StrUtil.contains(response, "RENDER_DATA")) {
+        if (StrUtil.isBlank(response) || !StrUtil.contains(response, "RENDER_DATA")) {
             log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
-        ParserResp resp = new ParserResp();
         String data = ReUtil.get("id=\"RENDER_DATA\" type=\"application/json\">(.*?)</script>", response, 1);
         // utf8解码
         data = URLDecoder.decode(data, StandardCharsets.UTF_8);
@@ -73,6 +65,11 @@ public class JinRiTouTiao extends Parser {
         }
         JSONObject jsonObject = JSONUtil.parseObj(data);
         JSONObject videoObject = jsonObject.getByPath("data.initialVideo", JSONObject.class);
+        return extract(jsonObject, videoObject);
+    }
+
+    private Result<ParserResp> extract(JSONObject jsonObject, JSONObject videoObject) {
+        ParserResp resp = new ParserResp();
         extractVideo(videoObject, resp);
         extractInfo(jsonObject, resp);
         return Result.success(resp);

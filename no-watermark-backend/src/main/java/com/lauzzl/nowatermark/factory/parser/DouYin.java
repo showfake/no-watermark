@@ -8,21 +8,22 @@ import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
 import com.lauzzl.nowatermark.base.utils.HttpUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.sql.Struct;
 import java.util.Optional;
 
 @Slf4j
 @Component
-public class DouYin extends Parser {
+public class DouYin implements Parser {
 
     // 视频图集
     private static final String VIDEO_URL = "https://www.iesdouyin.com/share/video/{}";
@@ -35,22 +36,41 @@ public class DouYin extends Parser {
     private static final String[] QUERY_NAMES = new String[]{"mid", "modal_id"};
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String redirectUrl = HttpUtil.getRedirectUrl(url, UserAgentPlatformEnum.PHONE);
         boolean isSlide = isSlide(redirectUrl);
-        String id = getId(redirectUrl, PATH_NAMES, QUERY_NAMES);
+        String id = UrlUtil.getId(redirectUrl, PATH_NAMES, QUERY_NAMES);
         if (StrUtil.isBlank(id)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
-        String url = StrUtil.replace(isSlide ? SLIDE_URL: VIDEO_URL, "{}", id);
-        String content =  Forest.get(url)
+        String reqUrl = StrUtil.replace(isSlide ? SLIDE_URL: VIDEO_URL, "{}", id);
+        String response =  Forest.get(reqUrl)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.PHONE))
                 .executeAsString();
-        if (!content.contains(id)) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
+        if (!response.contains(id)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
-        return extract(content, isSlide);
+        JSONObject itemObj = getItemObj(response, isSlide);
+        if (itemObj == null || itemObj.isEmpty()) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
+            return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
+        }
+        return extract(itemObj);
+    }
+
+
+    private JSONObject getItemObj(String content, boolean isSlide) {
+        JSONObject jsonObj,item;
+        if (isSlide) {
+            jsonObj = JSONUtil.parseObj(content);
+            item = jsonObj.getByPath("['aweme_details'][0]", JSONObject.class);
+        } else {
+            String jsonData = ReUtil.get("_ROUTER_DATA = (.*?)</script", content, 1);
+            jsonObj = JSONUtil.parseObj(jsonData);
+            item = jsonObj.getByPath("loaderData['video_(id)/page'].videoInfoRes['item_list'][0]", JSONObject.class);
+        }
+        return item;
     }
 
 
@@ -59,29 +79,12 @@ public class DouYin extends Parser {
     }
 
 
-    private Result<ParserResp> extract(String content, boolean isSlide) {
-        JSONObject jsonObj,item;
+    private Result<ParserResp> extract(JSONObject itemObj) {
         ParserResp result = new ParserResp();
-        if (isSlide) {
-            jsonObj = JSONUtil.parseObj(content);
-            item = jsonObj.getByPath("['aweme_details'][0]", JSONObject.class);
-        } else {
-            String jsonData = ReUtil.get("_ROUTER_DATA = (.*?)</script", content, 1);
-            if (StrUtil.isBlank(jsonData)) {
-                log.error("解析链接：{} 失败，返回结果：{}", url, content);
-                return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
-            }
-            jsonObj = JSONUtil.parseObj(jsonData);
-            item = jsonObj.getByPath("loaderData['video_(id)/page'].videoInfoRes['item_list'][0]", JSONObject.class);
-        }
-        if (item == null || item.isEmpty()) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
-            return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
-        }
-        extractInfo(item, result);
-        extractVideo(item, result);
-        extractImage(item, result);
-        resetCover(result);
+        extractInfo(itemObj, result);
+        extractVideo(itemObj, result);
+        extractImage(itemObj, result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

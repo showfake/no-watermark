@@ -10,29 +10,28 @@ import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
 import com.lauzzl.nowatermark.base.utils.CryptoUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.Charset;
-
 @Component
 @Slf4j
-public class YangShiPin extends Parser {
+public class YangShiPin implements Parser {
 
 
     private static final String GUID = "mft9t9id_9etjjlqngy";
     private static final String PLATFORM = "4330701";
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
+    public Result<ParserResp> execute(String url) throws Exception {
         String realUrl = url;
         if (!realUrl.contains("vid")) {
             realUrl = ReUtil.get("URL='(.*?)'", Forest.get(realUrl).executeAsString(),1);
@@ -44,22 +43,22 @@ public class YangShiPin extends Parser {
             log.error("解析链接：{} 获取视频信息失败，返回结果：{}", realUrl, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
-        return extract(response);
-    }
-
-
-
-    private Result<ParserResp> extract(String response) throws DecoderException {
         String data = ReUtil.get("__STATE_video__=(.*?)</script>", response, 1);
         if (StrUtil.isBlank(data)) {
             log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_GET_POST_FAILED);
         }
+        return extract(data);
+    }
+
+
+
+    private Result<ParserResp> extract(String data) throws DecoderException {
         ParserResp resp = new ParserResp();
         JSONObject jsonObj = JSONUtil.parseObj(data);
         extractInfo(jsonObj, resp);
         extractVideo(jsonObj, resp);
-        resetCover(resp);
+        ParserResultUtils.resetCover(resp);
         return Result.success(resp);
     }
 
@@ -84,7 +83,7 @@ public class YangShiPin extends Parser {
                 .executeAsString();
         JSONObject jsonObject = JSONUtil.parseObj(response.substring(1).substring(0, response.length() - 1));
         if (jsonObject.isEmpty() || jsonObject.getInt("exem") != 2) {
-            log.error("解析链接：{} 获取视频信息失败，返回结果：{}", url, response);
+            log.error("获取视频信息失败，返回结果：{}", response);
             return;
         }
         String baseUrl = jsonObject.getByPath("vl.vi[0].ul.ui[0].url", String.class);

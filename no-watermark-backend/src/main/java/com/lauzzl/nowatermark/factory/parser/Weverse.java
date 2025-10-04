@@ -10,11 +10,13 @@ import com.dtflys.forest.Forest;
 import com.dtflys.forest.http.ForestResponse;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
 import com.lauzzl.nowatermark.base.utils.CryptoUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +26,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class Weverse extends Parser {
+public class Weverse implements Parser {
 
     private static final String BASE_URL = "https://global.apis.naver.com/weverse/wevweb/post/v1.0/post-%s";
     private static final String APP_ID = "be4d79eb8fc7bd008ee82c8ec4ff6fd4";
@@ -33,8 +35,8 @@ public class Weverse extends Parser {
     private static final HmacAlgorithm ENCRYPT_ALGORITHM = HmacAlgorithm.HmacSHA1;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
-        String postId = getId(url, "media", null);
+    public Result<ParserResp> execute(String url) throws Exception {
+        String postId = UrlUtil.getId(url, "media", null);
         if (StrUtil.isBlank(postId)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
@@ -55,21 +57,21 @@ public class Weverse extends Parser {
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .addHeader("referer", "https://weverse.io/")
                 .execute(ForestResponse.class);
-        return extract(response.readAsString());
-    }
-
-    private Result<ParserResp> extract(String response) {
         JSONObject jsonObject = JSONUtil.parseObj(response);
         if (jsonObject.isEmpty() || !"common_700".equals(jsonObject.getStr("errorCode"))) {
-            log.error("解析失败: {}", response);
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
+        return extract(jsonObject);
+    }
+
+    private Result<ParserResp> extract(JSONObject jsonObject) {
         ParserResp result = new ParserResp();
         JSONObject data = jsonObject.getJSONObject("data");
         extractInfo(data, result);
         extractImage(data, result);
         extractVideo(data, result);
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 
@@ -85,6 +87,7 @@ public class Weverse extends Parser {
     }
 
     private void extractVideo(JSONObject jsonObject, ParserResp result) {
+        // TODO
     }
 
     private void extractInfo(JSONObject jsonObject, ParserResp result) {

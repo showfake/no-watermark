@@ -7,10 +7,12 @@ import cn.hutool.json.JSONUtil;
 import com.dtflys.forest.Forest;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,19 +21,20 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class WeiShi extends Parser {
+public class WeiShi implements Parser {
 
     private static final String BASE_URL = "https://h5.weishi.qq.com/webapp/json/weishi/WSH5GetPlayPage";
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
-        String id = getId(url, UserAgentPlatformEnum.DEFAULT, null, "id");
+    public Result<ParserResp> execute(String url) throws Exception {
+        String id = UrlUtil.getId(url,null, "id");
         String response = Forest.post(BASE_URL)
                 .setUserAgent(CommonUtil.getUserAgent(UserAgentPlatformEnum.DEFAULT))
                 .contentTypeJson()
                 .addBody("feedid", id)
                 .executeAsString();
         if (StrUtil.isBlank(response)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
         return extract(response);
@@ -42,14 +45,10 @@ public class WeiShi extends Parser {
         ParserResp result = new ParserResp();
         JSONObject jsonObject = JSONUtil.parseObj(content);
         JSONObject itemObject = jsonObject.getByPath("data.feeds[0]", JSONObject.class);
-        if (itemObject == null || itemObject.isEmpty()) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
-            return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
-        }
         extractInfo(itemObject, result);
         extractVideo(itemObject, result);
         extractImage(itemObject, result);
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

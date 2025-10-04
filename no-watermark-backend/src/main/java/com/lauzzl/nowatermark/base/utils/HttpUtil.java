@@ -1,10 +1,34 @@
 package com.lauzzl.nowatermark.base.utils;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
 import com.dtflys.forest.Forest;
+import com.dtflys.forest.http.ForestProxy;
 import com.dtflys.forest.http.ForestResponse;
+import com.lauzzl.nowatermark.base.config.ProxyConfig;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 
 public class HttpUtil {
+
+
+    /**
+     * 获取 HTTP 请求
+     *
+     * @param url   网址
+     * @param proxy 代理
+     * @return {@link HttpRequest }
+     */
+    public static HttpRequest getHttpRequest(String url, ForestProxy proxy) {
+        HttpRequest request = cn.hutool.http.HttpUtil.createGet(url);
+        if (proxy != null) {
+            request.setHttpProxy(proxy.getHost(), proxy.getPort());
+            if (StrUtil.isAllNotBlank(proxy.getUsername(), proxy.getPassword())) {
+                request.basicProxyAuth(proxy.getUsername(), proxy.getPassword());
+            }
+        }
+        return request;
+    }
+
 
 
     /**

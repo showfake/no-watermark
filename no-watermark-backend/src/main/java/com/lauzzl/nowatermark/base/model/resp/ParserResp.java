@@ -1,7 +1,6 @@
 package com.lauzzl.nowatermark.base.model.resp;
 
-import cn.hutool.core.util.StrUtil;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

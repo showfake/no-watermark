@@ -9,10 +9,12 @@ import com.dtflys.forest.http.ForestCookie;
 import com.dtflys.forest.http.ForestResponse;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public class WeiBo extends Parser {
+public class WeiBo implements Parser {
 
     private final static String BASE_URL = "https://weibo.com/ajax/statuses/show";
 
@@ -37,8 +39,8 @@ public class WeiBo extends Parser {
     private StringRedisTemplate redisTemplate;
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
-        String id = getLastPath(url);
+    public Result<ParserResp> execute(String url) throws Exception {
+        String id = UrlUtil.getLastPath(url);
         if (StrUtil.isBlank(id)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
@@ -50,6 +52,7 @@ public class WeiBo extends Parser {
                 .addHeader("Referer", url)
                 .executeAsString();
         if (StrUtil.isBlank(response)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
         // 如果cookie过期则重新获取
@@ -66,7 +69,7 @@ public class WeiBo extends Parser {
         extractInfo(jsonObject, result);
         extractVideo(jsonObject, result);
         extractImage(jsonObject, result);
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 
@@ -113,6 +116,7 @@ public class WeiBo extends Parser {
      * @return {@link String }
      */
     private String getCookieSub(boolean isExpire) {
+        String key = this.getClass().getSimpleName();
         if (isExpire) {
             redisTemplate.delete(String.format(cookieKey, key));
         }

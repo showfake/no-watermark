@@ -12,10 +12,12 @@ import com.dtflys.forest.http.ForestProxy;
 import com.lauzzl.nowatermark.base.code.ErrorCode;
 import com.lauzzl.nowatermark.base.config.ProxyConfig;
 import com.lauzzl.nowatermark.base.domain.Result;
-import com.lauzzl.nowatermark.base.enums.MediaTypeEnum;
+import com.lauzzl.nowatermark.factory.enums.MediaTypeEnum;
 import com.lauzzl.nowatermark.base.enums.UserAgentPlatformEnum;
 import com.lauzzl.nowatermark.base.model.resp.ParserResp;
 import com.lauzzl.nowatermark.base.utils.CommonUtil;
+import com.lauzzl.nowatermark.base.utils.ParserResultUtils;
+import com.lauzzl.nowatermark.base.utils.UrlUtil;
 import com.lauzzl.nowatermark.factory.Parser;
 import jakarta.annotation.Resource;
 import lombok.Data;
@@ -27,7 +29,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class Twitter extends Parser {
+public class Twitter implements Parser {
 
     @Resource
     private ProxyConfig proxyConfig;
@@ -60,8 +62,8 @@ public class Twitter extends Parser {
     private final static String VIDEO_TYPE = "video";
 
     @Override
-    public Result<ParserResp> execute() throws Exception {
-        String id = getId(url, UserAgentPlatformEnum.DEFAULT, "status");
+    public Result<ParserResp> execute(String url) throws Exception {
+        String id = UrlUtil.getId(url, "status", null);
         if (StrUtil.isBlank(id)) {
             return Result.failure(ErrorCode.PARSER_NOT_GET_ID);
         }
@@ -78,18 +80,19 @@ public class Twitter extends Parser {
                 .addHeader("x-csrf-token", xCsrfToken)
                 .executeAsString();
         if (StrUtil.isBlank(response)) {
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_FAILED);
         }
-        return extract(response);
-    }
-
-    private Result<ParserResp> extract(String content) {
-        JSONObject jsonObject = JSONUtil.parseObj(content);
+        JSONObject jsonObject = JSONUtil.parseObj(response);
         JSONArray instructions = jsonObject.getByPath("data['threaded_conversation_with_injections_v2'].instructions", JSONArray.class);
         if (instructions == null || instructions.isEmpty()) {
-            log.error("解析链接：{} 失败，返回结果：{}", url, content);
+            log.error("解析链接：{} 失败，返回结果：{}", url, response);
             return Result.failure(ErrorCode.PARSER_PARSE_MEDIA_INFO_FAILED);
         }
+        return extract(instructions);
+    }
+
+    private Result<ParserResp> extract(JSONArray instructions) {
         ParserResp result = new ParserResp();
         instructions.toList(JSONObject.class).forEach(item -> {
             JSONArray entries = item.get("entries", JSONArray.class);
@@ -99,7 +102,7 @@ public class Twitter extends Parser {
                 extractData(entity, result);
             }
         });
-        resetCover(result);
+        ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 

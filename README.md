@@ -16,34 +16,35 @@
 
 **一个基于 Spring Boot 3 的短视频/图集/实况去水印服务**
 
-![frontend](/screenshot/preview-frontend.png)
+![frontend](/screenshot/shots.png)
 
 
 
 ## 支持平台
 
-| 平台      | 支持域名                                            | 视频 | 图集 | 实况 |
-| --------- | --------------------------------------------------- | ---- | ---- | ---- |
-| 推特      | `x.com` `twitter.com`                               | ✅    | ✅    | -    |
-| 皮皮虾    | `h5.pipix.com`                                      | ✅    | ✅    | -    |
-| 抖音      | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅    | ✅    | ✅    |
-| Tik Tok   | `vm.tiktok.com` `www.tiktok.com`                    | ✅    | ❌️    | ❌️    |
-| 最右      | `share.xiaochuankeji.cn`                            | ✅    | ✅    | -    |
-| 皮皮搞笑  | `h5.ippzone.com`                                    | ✅    | ✅    | -    |
-| 微视      | `v.weishi.qq.com` `video.weishi.qq.com`             | ✅    | ✅    | -    |
-| 小红书    | `xhslink.com` `www.xiaohongshu.com`                 | ✅    | ✅    | ✅    |
-| 快手      | `www.kuaishou.com`                                  | ✅    | ✅    | -    |
-| 微博      | `weibo.com` `m.weibo.cn`                            | ✅    | ✅    | -    |
-| AcFun     | `www.acfun.cn`                                      | ✅    | -    | -    |
-| Instagram | `www.instagram.com`                                 | ✅    | ✅    | -    |
-| 今日头条  | `www.toutiao.com`  `m.toutiao.com`                  | ✅    | -    | -    |
-| 哔哩哔哩  | `www.bilibili.com`                                  | ✅    | -    | -    |
-| 央视频    | `w.yangshipin.cn`  `www.yspapp.cn`                  | ✅    | -    | -    |
-| Threads   | `www.threads.com`                                   | ✅    | ✅    | -    |
-| Pinterest | `www.pinterest.com` `pin.it`                        | ✅    | ✅    | -    |
-| Weverse   | `weverse.io`                                        | -    | ✅    | -    |
-| Vimeo     | `vimeo.com`                                         | ✅    | ✅    | -    |
-| 待添加    | -                                                   | -    |      |      |
+| 平台       | 支持域名                                            | 视频 | 图集 | 实况 |
+| ---------- | --------------------------------------------------- | ---- | ---- | ---- |
+| 推特       | `x.com` `twitter.com`                               | ✅    | ✅    | -    |
+| 皮皮虾     | `h5.pipix.com`                                      | ✅    | ✅    | -    |
+| 抖音       | `v.douyin.com` `www.douyin.com` `www.iesdouyin.com` | ✅    | ✅    | ✅    |
+| Tik Tok    | `vm.tiktok.com` `www.tiktok.com`                    | ✅    | ❌️    | ❌️    |
+| 最右       | `share.xiaochuankeji.cn`                            | ✅    | ✅    | -    |
+| 皮皮搞笑   | `h5.ippzone.com`                                    | ✅    | ✅    | -    |
+| 微视       | `v.weishi.qq.com` `video.weishi.qq.com`             | ✅    | ✅    | -    |
+| 小红书     | `xhslink.com` `www.xiaohongshu.com`                 | ✅    | ✅    | ✅    |
+| 快手       | `www.kuaishou.com`                                  | ✅    | ✅    | -    |
+| 微博       | `weibo.com` `m.weibo.cn`                            | ✅    | ✅    | -    |
+| AcFun      | `www.acfun.cn`                                      | ✅    | -    | -    |
+| Instagram  | `www.instagram.com`                                 | ✅    | ✅    | -    |
+| 今日头条   | `www.toutiao.com`  `m.toutiao.com`                  | ✅    | -    | -    |
+| 哔哩哔哩   | `www.bilibili.com`                                  | ✅    | -    | -    |
+| 央视频     | `w.yangshipin.cn`  `www.yspapp.cn`                  | ✅    | -    | -    |
+| Threads    | `www.threads.com`                                   | ✅    | ✅    | -    |
+| Pinterest  | `www.pinterest.com` `pin.it`                        | ✅    | ✅    | -    |
+| Weverse    | `weverse.io`                                        | -    | ✅    | -    |
+| Vimeo      | `vimeo.com`                                         | ✅    | ✅    | -    |
+| 微信公众号 | `mp.weixin.qq.com`                                  | -    | ✅    | -    |
+| 待添加     | -                                                   | -    | -    | -    |
 
 ## 账号配置
 
@@ -164,6 +165,8 @@ yarn dev
 ```
 
 ### 后端
+
+项目启动成功后可以访问 `http://localhost:10010/doc.html` 查看Api文档。
 
 ```shell
 cd no-watermark-backend

@@ -1,10 +1,10 @@
 package com.lauzzl.nowatermark.factory;
 
 
-import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.core.util.StrUtil;
+import com.lauzzl.nowatermark.factory.enums.Platform;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 
 /**
@@ -16,38 +16,29 @@ import java.util.Optional;
 @Component
 public class ParserFactory {
 
-    /**
-     * 视频 url
-     */
-    private String url;
+    private final ApplicationContext applicationContext;
 
-    /**
-     * 设置视频url
-     *
-     * @param url 网址
-     * @return {@link ParserFactory }
-     */
-    public ParserFactory setUrl(String url) {
-        this.url = url;
-        return this;
+    public ParserFactory(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     /**
-     * 获取解析器
+     * 创建解析器
      *
+     * @param url 网址
      * @return {@link Parser }
      */
-    public Parser build() {
-        for (Platform platform : Platform.getAllPlatforms()) {
+    public Parser createParser(String url) {
+        if (StrUtil.isBlank(url)) {
+            throw new IllegalArgumentException("视频地址不能为空");
+        }
+        for (Platform platform : Platform.values()) {
             if (url.matches(platform.getRegex())) {
-                Parser parser = Optional.ofNullable(SpringUtil.getBean(platform.getParserClass())).orElseThrow(() -> new RuntimeException("解析器不存在"));
-                parser.url = url;
-                parser.platformName = platform.getPlatformName();
-                parser.key = platform.getPlatformName();
-                return parser;
+                Class<? extends Parser> parserClass = platform.getParserClass();
+                return applicationContext.getBean(parserClass);
             }
         }
-        return null;
+        throw new IllegalArgumentException("未找到匹配的解析器，URL: " + url);
     }
 
 }
