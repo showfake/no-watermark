@@ -23,9 +23,6 @@ import java.util.Optional;
 @Slf4j
 public class XiaoHongShu implements Parser {
 
-
-    private String note_id;
-
     @Override
     public Result<ParserResp> execute(String url) throws Exception {
         String response = Forest.get(url)
@@ -43,16 +40,16 @@ public class XiaoHongShu implements Parser {
         JSONObject jsonObject = JSONUtil.parseObj(response);
         ParserResp result = new ParserResp();
         // noteData.data.noteData
-        note_id = jsonObject.getByPath("note.firstNoteId", String.class);
+        String note_id = jsonObject.getByPath("note.firstNoteId", String.class);
         JSONObject noteData = jsonObject.getByPath("note", JSONObject.class);
-        extractInfo(noteData, result);
-        extractVideo(noteData, result);
-        extractImage(noteData, result);
+        extractInfo(noteData, result, note_id);
+        extractVideo(noteData, result, note_id);
+        extractImage(noteData, result, note_id);
         ParserResultUtils.resetCover(result);
         return Result.success(result);
     }
 
-    private void extractImage(JSONObject noteData, ParserResp result) {
+    private void extractImage(JSONObject noteData, ParserResp result, String note_id) {
         Optional.ofNullable(noteData.getByPath("noteDetailMap['" + note_id + "'].note.imageList", JSONArray.class)).ifPresent(node -> node.toList(JSONObject.class).forEach(image -> {
             // 是否是实况
             boolean livePhoto = image.getBool("livePhoto");
@@ -65,7 +62,7 @@ public class XiaoHongShu implements Parser {
         }));
     }
 
-    private void extractVideo(JSONObject noteData, ParserResp result) {
+    private void extractVideo(JSONObject noteData, ParserResp result, String note_id) {
         Optional.ofNullable(noteData.getByPath("noteDetailMap['" + note_id + "'].note.video.media.stream", JSONObject.class)).ifPresent(node -> {
             result.getMedias().add(new ParserResp.Media()
                     .setUrl(node.getByPath("h264[0].masterUrl", String.class))
@@ -76,7 +73,7 @@ public class XiaoHongShu implements Parser {
         });
     }
 
-    private void extractInfo(JSONObject noteData, ParserResp result) {
+    private void extractInfo(JSONObject noteData, ParserResp result, String note_id) {
         String title = noteData.getByPath("noteDetailMap['" + note_id + "'].note.title") +
                 "\n" +
                 noteData.getByPath("noteDetailMap['" + note_id + "'].note.desc");
