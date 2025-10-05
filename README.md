@@ -8,8 +8,10 @@
 <a href="#代理配置">🌐 代理配置</a> |
 <a href="#缓存配置">💾 缓存配置</a> |
 <a href="#参与开发">👥 参与开发</a> |
+<a href="#常见问题">❓️ 常见问题</a> |
 <a href="#小程序在线体验">📱 小程序体验</a>
 </p>
+
 
 
 ## 项目介绍
@@ -43,7 +45,7 @@
 | Pinterest  | `www.pinterest.com` `pin.it`                        | ✅    | ✅    | -    |
 | Weverse    | `weverse.io`                                        | -    | ✅    | -    |
 | Vimeo      | `vimeo.com`                                         | ✅    | ✅    | -    |
-| 微信公众号 | `mp.weixin.qq.com`                                  | -    | ✅    | -    |
+| 微信公众号 | `mp.weixin.qq.com`                                  | ✅    | ✅    | -    |
 | 待添加     | -                                                   | -    | -    | -    |
 
 ## 账号配置
@@ -82,8 +84,6 @@ account:
 ```
 
 ### 哔哩哔哩
-
-> 哔哩哔哩获取的视频格式是m4s，播放或下载时需要添加Referer参数，否则会触发防盗链。
 
 哔哩哔哩设置账号cookie后可获取最高分辨率视频。
 
@@ -184,6 +184,30 @@ cd no-watermark-backend
 
 - 你可以通过 [PR](https://github.com/LauZzL/no-watermark/pulls) 对项目代码做出贡献
 - 你可以通过 [Issues](https://github.com/LauZzL/no-watermark/issues) 提交问题或提出建议
+
+## 常见问题
+
+### **Q：哔哩哔哩视频下载403**
+
+A：哔哩哔哩获取的视频格式是m4s，播放或下载时需要添加Referer参数，否则会触发防盗链。
+
+```
+referer: https://www.bilibili.com/
+```
+
+#### **Q：微信公众号视频下载403**
+
+A：微信公众号视频在下载时需要补齐header信息，在下载时需要携带下方请求头。
+
+```
+# 断点续传
+range: bytes=0-
+host: mpvideo.qpic.cn
+origin: https://mp.weixin.qq.com
+referer: https://mp.weixin.qq.com/
+```
+
+
 
 
 ## 小程序在线体验
